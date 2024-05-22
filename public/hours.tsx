@@ -1,0 +1,28 @@
+export const amHours = [
+  { hourNum: 0, hourStr: "12", hourLabel: "12:00 am", hour24: "00" },
+  { hourNum: 100, hourStr: "1", hourLabel: "1:00 am", hour24: "01" },
+  { hourNum: 200, hourStr: "2", hourLabel: "2:00 am", hour24: "02" },
+  { hourNum: 300, hourStr: "3", hourLabel: "3:00 am", hour24: "03" },
+  { hourNum: 400, hourStr: "4", hourLabel: "4:00 am", hour24: "04" },
+  { hourNum: 500, hourStr: "5", hourLabel: "5:00 am", hour24: "05" },
+  { hourNum: 600, hourStr: "6", hourLabel: "6:00 am", hour24: "06" },
+  { hourNum: 700, hourStr: "7", hourLabel: "7:00 am", hour24: "07" },
+  { hourNum: 800, hourStr: "8", hourLabel: "8:00 am", hour24: "08" },
+  { hourNum: 900, hourStr: "9", hourLabel: "9:00 am", hour24: "09" },
+  { hourNum: 1000, hourStr: "10", hourLabel: "10:00 am", hour24: "10" },
+  { hourNum: 1100, hourStr: "11", hourLabel: "11:00 am", hour24: "11" },
+];
+export const pmHours = [
+  { hourNum: 1200, hourStr: "12", hourLabel: "12:00 pm", hour24: "12" },
+  { hourNum: 1300, hourStr: "1", hourLabel: "1:00 pm", hour24: "13" },
+  { hourNum: 1400, hourStr: "2", hourLabel: "2:00 pm", hour24: "14" },
+  { hourNum: 1500, hourStr: "3", hourLabel: "3:00 pm", hour24: "15" },
+  { hourNum: 1600, hourStr: "4", hourLabel: "4:00 pm", hour24: "16" },
+  { hourNum: 1700, hourStr: "5", hourLabel: "5:00 pm", hour24: "17" },
+  { hourNum: 1800, hourStr: "6", hourLabel: "6:00 pm", hour24: "18" },
+  { hourNum: 1900, hourStr: "7", hourLabel: "7:00 pm", hour24: "19" },
+  { hourNum: 2000, hourStr: "8", hourLabel: "8:00 pm", hour24: "20" },
+  { hourNum: 2100, hourStr: "9", hourLabel: "9:00 pm", hour24: "21" },
+  { hourNum: 2200, hourStr: "10", hourLabel: "10:00 pm", hour24: "22" },
+  { hourNum: 2300, hourStr: "11", hourLabel: "11:00 pm", hour24: "23" },
+];

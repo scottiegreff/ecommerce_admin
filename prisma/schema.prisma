@@ -1,0 +1,260 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Billboard {
+  id         String     @id @default(uuid())
+  storeId    String
+  label      String
+  imageUrl   String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  store      Store      @relation("StoreToBillboard", fields: [storeId], references: [id])
+  categories Category[]
+
+  @@index([storeId])
+}
+
+// Booking > Service m-n, Service > Booking m-n
+// Shift > Booking m-n, Booking > Shift 1-1
+model Booking {
+  id          String    @id @default(uuid())
+  storeId     String
+  serviceId   String
+  date        DateTime
+  startTime   Int
+  endTime     Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime?
+  orderItemId String
+  shiftId     String
+  customerId  String
+  orderItems  OrderItem[]
+  store       Store      @relation("StoreToBooking", fields: [storeId], references: [id])
+  customer    Customer   @relation(fields: [customerId], references: [id])
+  services    Service[]
+  shift       Shift      @relation(fields: [shiftId], references: [id])
+
+  @@index([storeId])
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  storeId     String
+  billboardId String
+  name        String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  billboard   Billboard @relation(fields: [billboardId], references: [id])
+  store       Store     @relation("StoreToCategory", fields: [storeId], references: [id])
+  products    Product[] @relation("CategoryToProduct")
+  services    Service[] @relation("CategoryToService")
+
+  @@index([storeId])
+  @@index([billboardId])
+}
+
+model Color {
+  id        String    @id @default(uuid())
+  storeId   String
+  name      String
+  value     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  store     Store     @relation("StoreToColor", fields: [storeId], references: [id])
+  products  Product[]
+
+  @@index([storeId])
+}
+
+model Customer {
+  id          String     @id @default(uuid())
+  storeId     String
+  custFName   String
+  custLName   String
+  email       String      @unique
+  phone       String
+  bookings    Booking[]
+  orderItems  OrderItem[]
+  orders      Order[]
+
+  @@index([storeId])
+}
+
+model Employee {
+  id        String   @id @default(uuid())
+  storeId   String
+  fName     String
+  lName     String
+  email     String   @unique
+  phone     String
+  color     String
+  createdAt DateTime @default(now())
+  isActive  Boolean  @default(true)
+  shifts    Shift[]  @relation("EmployeeToShift")
+  store     Store    @relation("StoreToEmployee", fields: [storeId], references: [id])
+
+  @@index([storeId])
+}
+
+model Hero {
+  id        String   @id @default(uuid())
+  storeId   String
+  label     String
+  imageUrl  String
+  logoUrl   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  store     Store    @relation("StoreToHero", fields: [storeId], references: [id])
+
+  @@index([storeId])
+}
+
+model Image {
+  id        String   @id @default(uuid())
+  productId String?
+  serviceId String?
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  service   Service? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([serviceId])
+}
+
+model Order {
+  id         String      @id @default(uuid())
+  storeId    String
+  customerId String
+  isPaid     Boolean     @default(false)
+  phone      String      @default("")
+  address    String      @default("")
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  customer   Customer?   @relation(fields: [customerId], references: [id])
+  store      Store       @relation("StoreToOrder", fields: [storeId], references: [id])
+  orderItems OrderItem[]
+
+  @@index([storeId])
+}
+
+model OrderItem {
+  id         String     @id @default(uuid())
+  customerId String
+  orderId    String
+  productId  String
+  bookingId  String
+  order      Order      @relation(fields: [orderId], references: [id])
+  customer   Customer?   @relation(fields: [customerId], references: [id])
+  product    Product?   @relation(fields: [productId], references: [id])
+  booking    Booking?   @relation(fields: [bookingId], references: [id])
+  
+  @@index([orderId])
+  @@index([productId])
+  @@index([bookingId])
+  @@index([customerId])
+}
+
+model Product {
+  id         String      @id @default(uuid())
+  storeId    String
+  categoryId String
+  name       String
+  price      Decimal
+  isFeatured Boolean     @default(false)
+  isArchived Boolean     @default(false)
+  sizeId     String
+  colorId    String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  images     Image[]
+  orderItems OrderItem[]
+  category   Category    @relation("CategoryToProduct", fields: [categoryId], references: [id])
+  color      Color       @relation(fields: [colorId], references: [id])
+  size       Size        @relation(fields: [sizeId], references: [id])
+  store      Store       @relation("StoreToProduct", fields: [storeId], references: [id])
+
+  @@index([storeId])
+  @@index([categoryId])
+  @@index([sizeId])
+  @@index([colorId])
+}
+
+model Service {
+  id         String     @id @default(uuid())
+  storeId    String
+  categoryId String
+  name       String
+  duration   Int
+  price      Float
+  isFeatured Boolean    @default(false)
+  isArchived Boolean    @default(false)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  images     Image[]
+  bookings   Booking[]
+  category   Category   @relation("CategoryToService", fields: [categoryId], references: [id])
+  store      Store      @relation("StoreToService", fields: [storeId], references: [id])
+
+  @@index([storeId])
+  @@index([categoryId])
+}
+
+model Shift {
+  id         String    @id @default(uuid())
+  storeId    String
+  employeeId String
+  date       DateTime
+  startTime  Int
+  endTime    Int
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  bookings   Booking[]
+  employee   Employee  @relation("EmployeeToShift", fields: [employeeId], references: [id])
+  store      Store     @relation("StoreToShift", fields: [storeId], references: [id])
+
+  @@index([storeId])
+  @@index([employeeId])
+}
+
+model Size {
+  id        String    @id @default(uuid())
+  storeId   String
+  name      String
+  value     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
+  store     Store     @relation("StoreToSize", fields: [storeId], references: [id])
+
+  @@index([storeId])
+}
+
+model Store {
+  id         String      @id @default(uuid())
+  name       String
+  userId     String
+  openTime   Int         @default(900) // 9:00 AM
+  closeTime  Int         @default(1600) // 6:00 PM
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  heros      Hero[]      @relation("StoreToHero")
+  employees  Employee[]  @relation("StoreToEmployee")
+  shifts     Shift[]     @relation("StoreToShift")
+  bookings   Booking[]   @relation("StoreToBooking")
+  billboards Billboard[] @relation("StoreToBillboard")
+  categories Category[]  @relation("StoreToCategory")
+  colors     Color[]     @relation("StoreToColor")
+  orders     Order[]     @relation("StoreToOrder")
+  products   Product[]   @relation("StoreToProduct")
+  sizes      Size[]      @relation("StoreToSize")
+  services   Service[]   @relation("StoreToService")
+}
+
