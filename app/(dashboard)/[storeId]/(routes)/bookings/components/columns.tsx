@@ -5,6 +5,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-action";
 
 export type BookingColumn = {
+  bookingId: string;
   name: string[];
   date: string;
   duration: number[];
