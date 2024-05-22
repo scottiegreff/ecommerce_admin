@@ -145,7 +145,6 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     console.log("EMPLOYEE: ", employeeId);
     console.log("CUSTOMER: ", customerId);
     console.log("DURATION: ", serviceDuration);
-    console.log("SERVICE", form.getValues("serviceId"));
   }, [
     customerId,
     setCustomerId,
