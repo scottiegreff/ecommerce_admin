@@ -30,7 +30,7 @@ export const getGraphRevenue = async (
     let revenueForOrder = 0;
 
     for (const item of order.orderItems) {
-      if (item?.product) {
+      if (item.product) {
         revenueForOrder += item.product.price.toNumber();
       }
     }
