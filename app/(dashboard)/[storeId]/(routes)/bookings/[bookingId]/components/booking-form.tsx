@@ -139,7 +139,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     }
   };
 
-  // console.log("SHIFTS: ", shifts);
+  // left of here
   useEffect(() => {
     console.log("DATE: ", date);
     console.log("EMPLOYEE: ", employeeId);
