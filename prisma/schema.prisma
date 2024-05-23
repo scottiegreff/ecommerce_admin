@@ -33,10 +33,10 @@ model Booking {
   updatedAt   DateTime?
   orderItemId String
   shiftId     String
-  customerId  String
+  // customerId  String
   orderItems  OrderItem[]
   store       Store      @relation("StoreToBooking", fields: [storeId], references: [id])
-  customer    Customer   @relation(fields: [customerId], references: [id])
+  // customer    Customer   @relation(fields: [customerId], references: [id])
   services    Service[]
   shift       Shift      @relation(fields: [shiftId], references: [id])
 
@@ -72,19 +72,19 @@ model Color {
   @@index([storeId])
 }
 
-model Customer {
-  id          String     @id @default(uuid())
-  storeId     String
-  custFName   String
-  custLName   String
-  email       String      @unique
-  phone       String
-  bookings    Booking[]
-  orderItems  OrderItem[]
-  orders      Order[]
+// model Customer {
+//   id          String     @id @default(uuid())
+//   storeId     String
+//   custFName   String
+//   custLName   String
+//   email       String      @unique
+//   phone       String
+//   bookings    Booking[]
+//   orderItems  OrderItem[]
+//   orders      Order[]
 
-  @@index([storeId])
-}
+//   @@index([storeId])
+// }
 
 model Employee {
   id        String   @id @default(uuid())
@@ -132,13 +132,13 @@ model Image {
 model Order {
   id         String      @id @default(uuid())
   storeId    String
-  customerId String
+  // customerId String
   isPaid     Boolean     @default(false)
   phone      String      @default("")
   address    String      @default("")
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
-  customer   Customer?   @relation(fields: [customerId], references: [id])
+  // customer   Customer?   @relation(fields: [customerId], references: [id])
   store      Store       @relation("StoreToOrder", fields: [storeId], references: [id])
   orderItems OrderItem[]
 
@@ -147,19 +147,19 @@ model Order {
 
 model OrderItem {
   id         String     @id @default(uuid())
-  customerId String
+  // customerId String
   orderId    String
   productId  String
   bookingId  String
   order      Order      @relation(fields: [orderId], references: [id])
-  customer   Customer?   @relation(fields: [customerId], references: [id])
+  // customer   Customer?   @relation(fields: [customerId], references: [id])
   product    Product?   @relation(fields: [productId], references: [id])
   booking    Booking?   @relation(fields: [bookingId], references: [id])
   
   @@index([orderId])
   @@index([productId])
   @@index([bookingId])
-  @@index([customerId])
+  // @@index([customerId])
 }
 
 model Product {
