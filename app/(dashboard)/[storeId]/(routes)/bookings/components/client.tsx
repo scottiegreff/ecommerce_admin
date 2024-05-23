@@ -26,7 +26,7 @@
 //   const params = useParams();
 //   const router = useRouter();
 
-//   // CHANGE ALL THE DATA HERE FOR THE CELLS
+//   // CHANGE ALL THE DATA HERE FOR THE CELL
 //   // console.log("DATA COLUMNS", columns);
 //   // let employeeHoursTemp = {};
 //   // function fillInEmployeeBookings() {
