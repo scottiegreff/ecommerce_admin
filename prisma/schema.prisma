@@ -28,16 +28,17 @@ model Booking {
   serviceId   String
   date        DateTime
   startTime   Int
-  endTime     Int
   createdAt   DateTime  @default(now())
   updatedAt   DateTime?
-  orderItemId String
+  // orderItemId String
   shiftId     String
-  // customerId  String
-  orderItems  OrderItem[]
+  employeeId  String
+  customerId  String
+  // orderItems  OrderItem[]
   store       Store      @relation("StoreToBooking", fields: [storeId], references: [id])
-  // customer    Customer   @relation(fields: [customerId], references: [id])
-  services    Service[]
+  customer    Customer   @relation(fields: [customerId], references: [id])
+  employee    Employee   @relation(fields: [employeeId], references: [id])
+  service     Service[]
   shift       Shift      @relation(fields: [shiftId], references: [id])
 
   @@index([storeId])
@@ -50,6 +51,7 @@ model Category {
   name        String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  itemType    ItemType
   billboard   Billboard @relation(fields: [billboardId], references: [id])
   store       Store     @relation("StoreToCategory", fields: [storeId], references: [id])
   products    Product[] @relation("CategoryToProduct")
@@ -57,6 +59,11 @@ model Category {
 
   @@index([storeId])
   @@index([billboardId])
+}
+
+enum ItemType {
+  GOODS
+  SERVICES
 }
 
 model Color {
@@ -72,19 +79,16 @@ model Color {
   @@index([storeId])
 }
 
-// model Customer {
-//   id          String     @id @default(uuid())
-//   storeId     String
-//   custFName   String
-//   custLName   String
-//   email       String      @unique
-//   phone       String
-//   bookings    Booking[]
-//   orderItems  OrderItem[]
-//   orders      Order[]
-
-//   @@index([storeId])
-// }
+model Customer {
+  id          String     @id @default(uuid())
+  storeId     String
+  custFName   String
+  custLName   String
+  email       String      @unique
+  phone       String
+  bookings    Booking[]
+  @@index([storeId])
+}
 
 model Employee {
   id        String   @id @default(uuid())
@@ -97,6 +101,8 @@ model Employee {
   createdAt DateTime @default(now())
   isActive  Boolean  @default(true)
   shifts    Shift[]  @relation("EmployeeToShift")
+  services  Service[]
+  bookings  Booking[]
   store     Store    @relation("StoreToEmployee", fields: [storeId], references: [id])
 
   @@index([storeId])
@@ -150,15 +156,15 @@ model OrderItem {
   // customerId String
   orderId    String
   productId  String
-  bookingId  String
+  // bookingId  String
   order      Order      @relation(fields: [orderId], references: [id])
   // customer   Customer?   @relation(fields: [customerId], references: [id])
   product    Product?   @relation(fields: [productId], references: [id])
-  booking    Booking?   @relation(fields: [bookingId], references: [id])
+  // booking    Booking?   @relation(fields: [bookingId], references: [id])
   
   @@index([orderId])
   @@index([productId])
-  @@index([bookingId])
+  // @@index([bookingId])
   // @@index([customerId])
 }
 
@@ -188,20 +194,22 @@ model Product {
 }
 
 model Service {
-  id         String     @id @default(uuid())
-  storeId    String
-  categoryId String
-  name       String
-  duration   Int
-  price      Float
-  isFeatured Boolean    @default(false)
-  isArchived Boolean    @default(false)
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  images     Image[]
-  bookings   Booking[]
-  category   Category   @relation("CategoryToService", fields: [categoryId], references: [id])
-  store      Store      @relation("StoreToService", fields: [storeId], references: [id])
+  id          String     @id @default(uuid())
+  storeId     String
+  categoryId  String
+  name        String
+  description String?
+  duration    Int
+  price       Float
+  isFeatured  Boolean    @default(false)
+  isArchived  Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  images      Image[]
+  bookings    Booking[]
+  employee    Employee[]
+  category    Category   @relation("CategoryToService", fields: [categoryId], references: [id])
+  store       Store      @relation("StoreToService", fields: [storeId], references: [id])
 
   @@index([storeId])
   @@index([categoryId])

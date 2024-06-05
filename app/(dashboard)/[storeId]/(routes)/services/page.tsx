@@ -23,6 +23,7 @@ const ServicesPage = async ({
   const formattedServices: ServiceColumn[] = services.map((item) => ({
     id: item.id,
     name: item.name,
+    description: item.description || "", // Handle null description
     duration: item.duration,
     price: formatter.format(item.price),
     isFeatured: item.isFeatured,

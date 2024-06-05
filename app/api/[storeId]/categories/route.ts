@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs';
 
 import prismadb from '@/lib/prismadb';
+
  
 export async function POST(
   req: Request,
@@ -12,7 +13,7 @@ export async function POST(
 
     const body = await req.json();
 
-    const { name, billboardId } = body;
+    const { name, itemType, billboardId } = body;
 
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 403 });
@@ -20,6 +21,10 @@ export async function POST(
 
     if (!name) {
       return new NextResponse("Name is required", { status: 400 });
+    }
+
+    if (!itemType) {
+      return new NextResponse("Item type is required", { status: 400 });
     }
     
     if (!billboardId) {
@@ -44,6 +49,7 @@ export async function POST(
     const category = await prismadb.category.create({
       data: {
         name,
+        itemType,
         billboardId,
         storeId: params.storeId,
       }

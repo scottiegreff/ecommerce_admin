@@ -36,6 +36,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
   name: z.string().min(1),
+  description: z.string().optional(),
   duration: z.coerce.number().min(1),
   price: z.coerce.number().nonnegative(),
   images: z.object({ url: z.string() }).array(),
@@ -70,7 +71,7 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
   const [loading, setLoading] = useState(false);
 
   const title = initialData ? "Edit service" : "Create service";
-  const description = initialData ? "Edit a service." : "Add a new service";
+  const descriptionMsg = initialData ? "Edit a service." : "Add a new service";
   const toastMessage = initialData ? "Service updated." : "Service created.";
   const action = initialData ? "Save changes" : "Create";
 
@@ -78,9 +79,11 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
     ? {
         ...initialData,
         price: parseFloat(String(initialData?.price)),
+        description: initialData?.description || "",
       }
     : {
         name: "",
+        description: "",
         images: [],
         duration: 0,
         price: 0,
@@ -140,7 +143,7 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
         loading={loading}
       />
       <div className="flex items-center justify-between">
-        <Heading title={title} description={description} />
+        <Heading title={title} description={descriptionMsg} />
         {initialData && (
           <Button
             disabled={loading}
@@ -200,6 +203,24 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Description for customer to see"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="duration"

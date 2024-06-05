@@ -5,23 +5,12 @@ import { stripe } from "@/lib/stripe";
 import prismadb from "@/lib/prismadb";
 
 const corsHeaders = {
-  "Cache-Control": "no-cache",
   "Access-Control-Allow-Origin": "http://localhost:3001",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
-export async function OPTIONS(req: Request) {
-  // const origin = req.headers.get("Origin");
-  // // Check if origin is allowed
-  // console.log("ORIGIN: ", origin)
-  // const allowedOrigins = ["http://localhost:3001"];
-  // if (origin)
-  //   if (allowedOrigins.includes(origin)) {
-  //     corsHeaders["Access-Control-Allow-Origin"] = origin;
-  //   } else {
-  //     console.log("Invalid origin!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! :", origin);
-  //   }
+export async function OPTIONS() {
   console.log("CORS HEADERS", corsHeaders);
   return NextResponse.json({}, { headers: corsHeaders });
 }

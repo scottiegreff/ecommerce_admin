@@ -7,11 +7,10 @@ import { CellAction } from "./cell-action"
 export type ServiceColumn = {
   id: string
   name: string;
+  description: string;
   duration: Number;
   price: string;
   category: string;
- 
-  createdAt: string;
   isFeatured: boolean;
   isArchived: boolean;
 }
@@ -20,6 +19,10 @@ export const columns: ColumnDef<ServiceColumn>[] = [
   {
     accessorKey: "name",
     header: "Name",
+  },
+  {
+    accessorKey: "description",
+    header: "Description",
   },
   {
     accessorKey: "duration",
@@ -40,10 +43,6 @@ export const columns: ColumnDef<ServiceColumn>[] = [
   {
     accessorKey: "isFeatured",
     header: "Featured",
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Date",
   },
   {
     id: "actions",
