@@ -102,7 +102,7 @@ export async function POST(
     const startTimeFormatted = formatTime(startTime);
     const from: string = "scottiegreff@gmail.com";
     const to: string = email || "";
-    const subject: string = "Appointment Confirmation";
+    const subject: string = "Ziggy's Hair Appointment Confirmation";
     const mailTemplate: string = `<body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #000000; border-radius: 20px  ">
     <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #333 border-radius: 20px;">
         <h1 style="text-align: center; color: #FFFFFF;">Ziggy's Salon</h3>

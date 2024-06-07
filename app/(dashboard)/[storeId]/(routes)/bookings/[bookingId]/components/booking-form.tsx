@@ -223,27 +223,29 @@ const BookingForm: React.FC<BookingFormProps> = ({ data }) => {
   function getAvailableBookingTimes(
     shiftStart: Date,
     shiftEnd: Date,
-    bookedTimes: Date[]
+    bookedTimes: Date[],
+    service?: { duration?: number }
   ): Date[] {
     const availableTimes: Date[] = [];
     const interval = 15 * 60 * 1000; // 15 minutes in milliseconds
+    // Ensure appointmentDuration is defined and convert to milliseconds
     let appointmentDuration = service?.duration;
     if (!appointmentDuration) {
-      return [];
+      // Set a default duration if service.duration is undefined
+      appointmentDuration = 60; // Default duration in minutes
     }
-    appointmentDuration = appointmentDuration * 60 * 1000 ?? 60;
+    appointmentDuration = appointmentDuration * 60 * 1000; // Convert minutes to milliseconds
     for (
       let time = new Date(shiftStart.getTime());
       time.getTime() + appointmentDuration <= shiftEnd.getTime();
       time.setTime(time.getTime() + interval)
     ) {
       const appointmentEnd = new Date(time.getTime() + appointmentDuration);
-      // if()
+      // Check if the current time slot overlaps with any booked times
       const isBooked = bookedTimes.some((bookedTime) => {
         const bookedEnd = new Date(bookedTime.getTime() + appointmentDuration);
         return time < bookedEnd && appointmentEnd > bookedTime;
       });
-
       if (!isBooked) {
         availableTimes.push(new Date(time.getTime()));
       }
