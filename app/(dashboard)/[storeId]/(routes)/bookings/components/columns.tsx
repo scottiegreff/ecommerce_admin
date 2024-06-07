@@ -4,17 +4,8 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { CellAction } from "./cell-action";
 
-
-  // date
-  // startTime
-  // custFName
-  // custLName
-  // email
-  // phone
-  // name (service)
-  // fName (employee)
-
 export type BookingColumn = {
+  bookingId: string;
   date: string;
   startTime: number;
   custFName: string;

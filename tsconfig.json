@@ -29,6 +29,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "prisma/seed.js"
-  ],
+, "lib/emails/mailService.ts"  ],
   "exclude": ["node_modules"]
 }

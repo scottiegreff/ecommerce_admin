@@ -94,6 +94,15 @@ export const ShiftForm: React.FC<ShiftFormProps> = ({
     console.log("DATA: ", data);
     try {
       setLoading(true);
+      if (data.startTime > data.endTime) {
+        toast.error("End time must be greater than start time.");
+        return;
+      }
+      if ((data.from ?? new Date()) > (data.to ?? new Date())) {
+        toast.error("End date must be greater than start date.");
+        return;
+      }
+
       if (initialData) {
         await axios.patch(
           `/api/${params.storeId}/shifts/${params.shiftId}`,
@@ -141,14 +150,19 @@ export const ShiftForm: React.FC<ShiftFormProps> = ({
           />
           <div className="">
             <div className="flex items-center justify-between">
-              <Heading title={title} description={`${description} on ${format(new Date(initialData.date), "PPP")}`} />
+              <Heading
+                title={title}
+                description={`${description} on ${format(
+                  new Date(initialData.date),
+                  "PPP"
+                )}`}
+              />
             </div>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-8 w-full"
               >
-          
                 <div className="md:grid md:grid-cols-2 gap-8 py-10">
                   <FormField
                     control={form.control}
@@ -230,7 +244,6 @@ export const ShiftForm: React.FC<ShiftFormProps> = ({
                       <FormLabel>Employee Name</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger className="text-muted-foreground">
@@ -342,8 +355,8 @@ export const ShiftForm: React.FC<ShiftFormProps> = ({
                         <Input
                           type="number"
                           step={100}
-                          // min={storeData?.openTime}
-                          // max={storeData?.closeTime}
+                          min={0}
+                          max={2400}
                           disabled={loading}
                           placeholder="000"
                           {...field}
@@ -364,8 +377,8 @@ export const ShiftForm: React.FC<ShiftFormProps> = ({
                         <Input
                           type="number"
                           step={100}
-                          // min={storeData?.openTime}
-                          // max={storeData?.closeTime}
+                          min={0}
+                          max={2400}
                           disabled={loading}
                           placeholder="000"
                           {...field}

@@ -1,32 +1,22 @@
 "use client";
 
-import * as z from "zod";
-import axios from "axios";
-import { useState, useEffect } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useState, useEffect, use } from "react";
 import { toast } from "react-hot-toast";
-import { Booking, Shift, Service, Employee, Customer } from "@prisma/client";
 import { useParams, useRouter } from "next/navigation";
-
-import Link from "next/link";
-import { addDays, format, set } from "date-fns";
-import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/ui/calendar";
-import { Input } from "@/components/ui/input";
+
+import { CalendarIcon } from "lucide-react";
+import { SearchIcon } from "lucide-react";
+import { Search } from "lucide-react";
+import { CheckIcon } from "lucide-react";
+import { format, set } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { SearchIcon, CheckIcon, Trash } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -35,95 +25,75 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
   Command,
+  CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
 } from "@/components/ui/command";
-import { Separator } from "@/components/ui/separator";
-import { Heading } from "@/components/ui/heading";
-import { AlertModal } from "@/components/modals/alert-modal";
-import ImageUpload from "@/components/ui/image-upload";
-
-const formSchema = z.object({
-  customerId: z.string(),
-  date: z.coerce.date(),
-  shiftId: z.string(),
-  serviceId: z.string(),
-  startTime: z.coerce.number().min(1),
-
-});
-
-type BookingFormValues = z.infer<typeof formSchema>;
+import { Booking, Employee, Service, Shift, Customer } from "@/types";
+import React from "react";
 
 interface BookingFormProps {
-  initialData: Booking | null | undefined;
-  customers: Customer[] | null;
-  services: Service[] | null;
-  employees: Employee[] | null;
-  shifts: Shift[] | null;
+  data: Customer[];
 }
 
-export const BookingForm: React.FC<BookingFormProps> = ({
-  initialData,
-  customers,
-  services,
-  employees,
-  shifts,
-}) => {
+const BookingForm: React.FC<BookingFormProps> = ({ data }) => {
   const params = useParams();
   const router = useRouter();
-  const storeId = params.storeId;
-  const [storeData, setStoreData] = useState(null);
-  const [customerId2, setCustomerId2] = useState<string>();
-  const [date, setDate] = useState<Date>();
-  const [employeeId, setEmployeeId] = useState<string>();
+  const [service, setService] = useState<Service>();
+  const [serviceId, setServiceId] = useState("");
+  const [customers, setCustomers] = useState<Customer[]>(data);
+  const [customerId, setCustomerId] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [services, setServices] = useState<Service[]>();
   const [serviceDuration, setServiceDuration] = useState<number>();
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [employeeId, setEmployeeId] = useState("");
+  const [shifts, setShifts] = useState<Shift[]>([]);
+  const [shift, setShift] = useState<Shift>();
+  const [date, setDate] = useState<Date>();
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  let [bookingHours, setBookingHours] = useState<Date[] | undefined>([]);
+  const [shiftStart, setShiftStart] = useState<Date>();
+  const [shiftEnd, setShiftEnd] = useState<Date>();
+  const [bookingTimes, setBookingTimes] = useState<Date[]>();
+  const [startTime, setStartTime] = useState<Number>();
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState("");
 
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const title = initialData ? "Edit booking" : "Create booking";
-  const description = initialData
-    ? "Edit booking hours on"
-    : "Add a new booking";
-  const toastMessage = initialData ? "Booking updated." : "Booking created.";
-  const action = initialData ? "Save changes" : "Create";
+  const bookingToastMessage = "Booking created.";
+  const bookingAction = "Book Appointment";
 
-  const form = useForm<BookingFormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      customerId: initialData?.customerId ?? undefined,
-      date: initialData?.date,
-
-      serviceId: initialData?.serviceId,
-      startTime: initialData?.startTime,
-
-    },
-  });
-
-  const onSubmit = async (data: BookingFormValues) => {
+  const onSubmit = async () => {
+    const data = {
+      serviceId: serviceId,
+      date: date,
+      startTime: startTime,
+      employeeId: employeeId,
+      customerId: customerId,
+      shiftId: shift?.id,
+      email: customerEmail,
+    };
     console.log("DATA: ", data);
-
     try {
       setLoading(true);
-      if (initialData) {
-        await axios.patch(
-          `/api/${params.storeId}/bookings/${params.bookingId}`,
-          data
-        );
-      } else {
-        await axios.post(`/api/${params.storeId}/bookings/`, data);
-      }
+      const response = await fetch(
+        `/api/${params.storeId}/bookingsStorePost`,
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+        }
+      );
+      const responseData = await response.json(); // Access the response data
       router.refresh();
-      router.push(`/${params.storeId}/bookings`);
-      toast.success(toastMessage);
+      toast.success(bookingToastMessage);
     } catch (error: any) {
       toast.error("Something went wrong.");
     } finally {
@@ -131,278 +101,436 @@ export const BookingForm: React.FC<BookingFormProps> = ({
     }
   };
 
-  const onDelete = async () => {
-    try {
-      setLoading(true);
-      await axios.delete(`/api/${params.storeId}/bookings/${params.bookingId}`);
-      router.refresh();
-      router.push(`/${params.storeId}/bookings`);
-      toast.success("Booking deleted.");
-    } catch (error: any) {
-      toast.error("Did not delete booking");
-    } finally {
-      setLoading(false);
-      setOpen(false);
-    }
-  };
+  // Depending where the app is deployed the timeZone may need to be changed.
+  function formatUTCtoLocalDate(date: Date) {
+    return new Date(
+      date.toLocaleString("en-US", { timeZone: "America/Vancouver" })
+    );
+  }
+
+  // Function called from the date disabled attribute to check if the date is the same as the employeeId.
+  // If the date is the same as the employeeId then the date is NOT disabled.
+  function isDateSameAsEmployeeId(date: Date, shifts: Shift[]) {
+    // console.log("SHIFT.DATE: ", typeof(shifts[2]?.date), "- DATE: ", typeof(date));
+    return shifts?.some((shift) => {
+      return shift.date.toString() == date.toString();
+    });
+  }
 
   useEffect(() => {
-    console.log("DATE: ", date);
-    console.log("EMPLOYEE: ", employeeId);
-    console.log("CUSTOMER: ", customerId2);
-    console.log("DURATION: ", serviceDuration);
-  }, [
-    customerId2,
-    setCustomerId2,
-    serviceDuration,
-    serviceDuration,
-    date,
-    setDate,
-    employeeId,
-    setEmployeeId,
-  ]);
-  // const customerId = form.watch("customerId");
-  // console.log("CUSTOMER: ", customers);
+    // Fetch employees and services from the API
+    const employees = async () => {
+      try {
+        const response = await fetch(`/api/${params.storeId}/employeesStore`);
+        const data = await response.json();
+        setEmployees(data);
+      } catch (error) {
+        console.error("There was an error!", error);
+      }
+    };
+    const services = async () => {
+      try {
+        const response = await fetch(`/api/${params.storeId}/services`);
+        const data = await response.json();
+        setServices(data);
+      } catch (error) {
+        console.error("There was an error!", error);
+      }
+    };
+    services();
+    employees();
+  }, []);
+
+  useEffect(() => {
+    // Fetch all shifts of employeeId from the API, and returns the shifts from today onwards, then setShifts.
+    if (employeeId && customerId && serviceId) {
+      const shifts = async () => {
+        try {
+          const response = await fetch(`/api/${params.storeId}/shiftsStore`, {
+            method: "POST",
+            body: JSON.stringify({ employeeId: employeeId }),
+          });
+          const data = await response.json();
+          data.forEach((item: any) => {
+            item.date = formatUTCtoLocalDate(item.date);
+          });
+          setShifts(data);
+        } catch (error) {
+          console.error("There was an error!", error);
+        }
+      };
+      shifts();
+    }
+  }, [employeeId]);
+
+  useEffect(() => {
+    // Fetch the existing bookings for the selected date/shift of employeeId.
+    if (employeeId && date && shift) {
+      const shifts = async () => {
+        try {
+          const response = await fetch(
+            `/api/${params.storeId}/bookingsStoreGet`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                shiftId: shift.id,
+                employeeId: employeeId,
+              }),
+            }
+          );
+          const data = await response.json();
+          data.forEach((item: any) => {
+            item.date = new Date(
+              date.toLocaleString("en-US", { timeZone: "America/Vancouver" })
+            );
+          });
+          setBookings(data);
+
+          const shiftStart = new Date(shift.date);
+          shiftStart.setHours(
+            Math.floor(shift.startTime / 100),
+            shift.startTime % 100
+          );
+          setShiftStart(shiftStart);
+
+          const shiftEnd = new Date(shift.date);
+          shiftEnd.setHours(
+            Math.floor(shift.endTime / 100),
+            shift.endTime % 100
+          );
+          setShiftEnd(shiftEnd);
+          let bookingTimes: Date[] = data.map((item: any) => {
+            let date = new Date(item.date);
+            date.setHours(
+              Math.floor(item.startTime / 100),
+              item.startTime % 100
+            );
+            return date;
+          });
+
+          setBookingTimes(bookingTimes);
+          setBookingHours(
+            getAvailableBookingTimes(shiftStart, shiftEnd, bookingTimes)
+          );
+        } catch (error) {
+          console.error("There was an error!", error);
+        }
+      };
+      shifts();
+    }
+  }, [date]);
+
+  // Creates an array of available booking times based on the shift start and end times,
+  //  and the existing bookings of the selected date/shift.
+  //  The interval can be changed by changing the interval variable.
+  function getAvailableBookingTimes(
+    shiftStart: Date,
+    shiftEnd: Date,
+    bookedTimes: Date[]
+  ): Date[] {
+    const availableTimes: Date[] = [];
+    const interval = 15 * 60 * 1000; // 15 minutes in milliseconds
+    let appointmentDuration = service?.duration;
+    if (!appointmentDuration) {
+      return [];
+    }
+    appointmentDuration = appointmentDuration * 60 * 1000;
+    for (
+      let time = new Date(shiftStart.getTime());
+      time.getTime() + appointmentDuration <= shiftEnd.getTime();
+      time.setTime(time.getTime() + interval)
+    ) {
+      const appointmentEnd = new Date(time.getTime() + appointmentDuration);
+
+      const isBooked = bookedTimes.some((bookedTime) => {
+        const bookedEnd = new Date(bookedTime.getTime() + appointmentDuration);
+        return time < bookedEnd && appointmentEnd > bookedTime;
+      });
+
+      if (!isBooked) {
+        availableTimes.push(new Date(time.getTime()));
+      }
+    }
+    return availableTimes;
+  }
+
+  // Formats the time to a 24 hour format.
+  function formatTime(dateString: string): number {
+    const date: Date = new Date(dateString);
+    let hours: number = date.getHours();
+    let minutes: number = date.getMinutes();
+    const formattedTime: string = `${hours}${
+      minutes < 10 ? "0" : ""
+    }${minutes}`;
+
+    return parseInt(formattedTime, 10);
+  }
   return (
     <>
-      <AlertModal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        onConfirm={onDelete}
-        loading={loading}
-      />
-      <div className="flex items-center justify-between">
-        <Heading title={title} description={description} />
-        {initialData && (
-          <Button
-            disabled={loading}
-            variant="destructive"
-            size="sm"
-            onClick={() => setOpen(true)}
-          >
-            <Trash className="h-4 w-4" />
-          </Button>
-        )}
-      </div>
-      <Separator />
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8 w-full"
-        >
-          <div className="md:grid md:grid-cols-2 gap-8">
-            <FormField
-              control={form.control}
-              name="customerId"
-              render={({ field }) => (
-                <FormItem className="flex flex-col py-3">
-                  <FormLabel>Customer</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "justify-between",
-                            !field.value && "text-muted-foreground w-full"
-                          )}
+      <div>
+        <h2 className="mb-10 text-2xl text-center font-bold text-gray-800">
+          Book
+        </h2>
+        <div className="md:grid md:grid-cols-2 gap-8">
+          {/* SERVICE */}
+          <div className="flex flex-col gap-2 my-3 md:my-0">
+            <label className="text-md font-light">Service</label>
+            <Select
+              onValueChange={(value) => {
+                const selectedService = services?.find(
+                  (service) => service.id === value
+                );
+                setServiceId(value);
+                setService(selectedService);
+              }}
+            >
+              <SelectTrigger className="text-muted-foreground font-normal">
+                <SelectValue placeholder="Select a staff" />
+              </SelectTrigger>
+
+              <SelectContent className="w-full bg-white">
+                {services?.map((item) => (
+                  <SelectItem key={item.id} value={item.id}>
+                    {item.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {/* CUSTOMER */}
+          <div className="flex flex-col gap-2 my-3 md:my-0">
+            <label className="text-md font-light">Book Customer</label>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  className="w-full justify-between text-muted-foreground font-normal"
+                >
+                  {value
+                    ? customers.find((item) => item.email === value)?.email
+                    : "Select a customer"}
+                  <CheckIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0">
+                <Command>
+                  <CommandInput
+                    placeholder="Search for customer"
+                    className="h-9"
+                  />
+                  <CommandList>
+                    <CommandEmpty>No customer found.</CommandEmpty>
+                    <CommandGroup>
+                      {customers.map((item) => (
+                        <CommandItem
+                          key={item.id}
+                          value={item.email}
+                          disabled={loading || !serviceId}
+                          onSelect={(currentValue) => {
+                            setValue(
+                              currentValue === value ? "" : currentValue
+                            );
+                            setCustomerId(item.id);
+                            setCustomerEmail(item.email);
+                            setOpen(false);
+                          }}
                         >
-                          {field.value
-                            ? customers?.find(
-                                (customer) => customer.id === field.value
-                              )?.email
-                            : "Select customer"}
-                          <SearchIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[30vw] p-2">
-                      <Command>
-                        <CommandInput
-                          placeholder="Search customers..."
-                          className="h-9"
-                        />
-                        <CommandEmpty>No customer found.</CommandEmpty>
-                        <CommandGroup>
-                          {customers?.map((customer) => (
-                            <CommandItem
-                              value={customer.email}
-                              key={customer.email}
-                              className="items-center"
-                              onSelect={() => {
-                                form.setValue("customerId", customer.id);
-                                setCustomerId2(customer.id);
-                              }}
-                            >
-                              {customer.email}
-                              <CheckIcon
-                                className={cn(
-                                  "ml-auto h-4 w-4",
-                                  customer.id === field.value
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
-                              />
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                          {item.email} - {item.custFName} {item.custLName}
+                          <CheckIcon
+                            className={cn(
+                              "ml-auto h-4 w-4",
+                              value === item.id ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
 
-            {/* <Label>Select Customer</Label>
-              <Select
-                onValueChange={(value) => {
-                  setCustomerId(value);
-                }}
-              >
-                <SelectTrigger className=" text-slate-500">
-                  <SelectValue placeholder="Customers" />
-                </SelectTrigger>
-                <SelectContent>
-                  {customers?.map((item) => (
-                    <SelectItem key={item.id} value={item.id}>
-                      {item.custFName} {item.custLName} - {item.email}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select> */}
+          {/* EMPLOYEE ID */}
+          <div className="flex flex-col gap-2 my-3 md:my-0">
+            <label className="text-md font-light">Book Staff</label>
+            <Select onValueChange={(value) => setEmployeeId(value)}>
+              <SelectTrigger className="text-muted-foreground font-normal">
+                <SelectValue placeholder="Select a staff" />
+              </SelectTrigger>
 
-            <FormField
-              control={form.control}
-              name="serviceId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Services</FormLabel>
-                  <Select
-                    disabled={loading}
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      const selectedService = services?.find(
-                        (service) => service.id === value
-                      );
-                      if (selectedService) {
-                        setServiceDuration(selectedService.duration);
+              <SelectContent className="w-full bg-white">
+                {employees?.map((item) => (
+                  <SelectItem
+                    key={item.id}
+                    value={item.id}
+                    disabled={loading || !serviceId || !customerId}
+                    onSelect={() => {
+                      if (item.id) {
+                        setEmployeeId(item.id);
                       }
                     }}
-                    value={field.value}
-                    defaultValue={field.value}
                   >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          className="text-black"
-                          placeholder="Select a category"
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {services?.map((item) => (
-                        <SelectItem key={item.id} value={item.id}>
-                          {item.name} - ${item.price} / {item.duration}min
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex flex-col gap-5">
-              <Label>Select Employee</Label>
-              <Select onValueChange={(value) => setEmployeeId(value)}>
-                <SelectTrigger className="text-slate-500">
-                  <SelectValue placeholder="Employee" />
-                </SelectTrigger>
-                <SelectContent>
-                  {employees?.map((item) => (
-                    <SelectItem
-                      key={item.id}
-                      value={item.id}
-                      disabled={loading || !customerId2 || !serviceDuration}
-                    >
-                      {item.fName} {item.lName}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-col gap-5">
-              <Label>Select Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "justify-start text-left font-normal",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    initialFocus
-                    disabled={(date) =>
-                      date < new Date() ||
-                      date > addDays(new Date(), 30) ||
-                      loading ||
-                      !customerId2 ||
-                      !serviceDuration
-                    }
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <FormField
-              control={form.control}
-              name="startTime"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Booking Time</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={String(field.value)}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Start Time" />
-                      </SelectTrigger>
-                    </FormControl>
-                    {/* <SelectContent>
-                      {shifts?.map((item) => (
-                        <SelectItem key={item.id} value={item.id}>
-                          {item.startTime} - {item.endTime}
-                        </SelectItem>
-                      ))}
-                    </SelectContent> */}
-                  </Select>
-                  {/* <FormDescription>
-                    You can manage email addresses in your{" "}
-                    <Link href="/examples/forms">email settings</Link>.
-                  </FormDescription> */}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    {item.fName} {item.lName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          <Button disabled={loading} className="ml-auto" type="submit">
-            {action}
+          {/* DATE PICKER */}
+          <div className="flex flex-col gap-2 my-3 md:my-0">
+            <label className="text-md font-light">Booking Date</label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-auto p-0 bg-white h-[325px]"
+                align="start"
+              >
+                <Calendar
+                  className="overflow-hidden font-bold"
+                  mode="single"
+                  selected={date}
+                  onSelect={(value) => {
+                    setDate(value);
+                    shifts.forEach((item) => {
+                      if (item.date.toString() === value?.toString()) {
+                        setShift(item);
+                      }
+                    });
+                  }}
+                  disabled={(date) => {
+                    const currentDate = new Date();
+                    currentDate.setHours(0, 0, 0, 0);
+                    const maxDate = new Date();
+                    maxDate.setDate(currentDate.getDate() + 60);
+                    return (
+                      employeeId == undefined ||
+                      date < currentDate ||
+                      date >= maxDate ||
+                      !isDateSameAsEmployeeId(date, shifts || [])
+                    );
+                  }}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          {/* START TIME */}
+          <div className="flex flex-col gap-2 my-3 md:my-0">
+            <label className="text-md font-light">Booking Time</label>
+            <Select
+              defaultValue={startTime?.toString()}
+              onValueChange={(value) => {
+                setStartTime(formatTime(value));
+              }}
+            >
+              <SelectTrigger className="text-muted-foreground font-normal">
+                <SelectValue placeholder="Pick an available time" />
+              </SelectTrigger>
+              <SelectContent className="w-[20vw] bg-white mt-1 block pr-10 py-2 text-base border-gray-300 sm:text-sm rounded-md max-h-100 overflow-y-auto">
+                {bookingHours?.map((time) => (
+                  <SelectItem
+                    key={time.toString()}
+                    value={time.toString()}
+                    disabled={loading || !employeeId || !date || !shift}
+                  >
+                    {format(time, "p")}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="flex justify-center items-center">
+          <Button
+            onClick={onSubmit}
+            disabled={loading || !employeeId || !date || !shift || !startTime}
+            className="py-6 mt-10 w-full md:w-[25vw] md:text-lg text-white bg-slate-700 shadow-lg"
+          >
+            {bookingAction}
           </Button>
-        </form>
-      </Form>
+        </div>
+      </div>
     </>
   );
 };
+
+export default BookingForm;
+
+{
+  /* <FormField
+control={form.control}
+name="customerId"
+render={({ field }) => (
+  <FormItem className="flex flex-col py-3">
+    <FormLabel>Customer</FormLabel>
+    <Popover>
+      <PopoverTrigger asChild>
+        <FormControl>
+          <Button
+            variant="outline"
+            role="combobox"
+            className={cn(
+              "justify-between",
+              !field.value && "text-muted-foreground w-full"
+            )}
+          >
+            {field.value
+              ? customers?.find(
+                  (customer) => customer.id === field.value
+                )?.email
+              : "Select customer"}
+            <SearchIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </FormControl>
+      </PopoverTrigger>
+      <PopoverContent className="w-[30vw] p-2">
+        <Command>
+          <CommandInput
+            placeholder="Search customers..."
+            className="h-9"
+          />
+          <CommandEmpty>No customer found.</CommandEmpty>
+          <CommandGroup>
+            {customers?.map((customer) => (
+              <CommandItem
+                value={customer.email}
+                key={customer.email}
+                className="items-center"
+                onSelect={() => {
+                  form.setValue("customerId", customer.id);
+                  setCustomerId2(customer.id);
+                }}
+              >
+                {customer.email}
+                <CheckIcon
+                  className={cn(
+                    "ml-auto h-4 w-4",
+                    customer.id === field.value
+                      ? "opacity-100"
+                      : "opacity-0"
+                  )}
+                />
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </Command>
+      </PopoverContent>
+    </Popover>
+    <FormMessage />
+  </FormItem>
+)}
+/> */
+}

@@ -2,13 +2,11 @@
 
 import { Plus } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-// import { ShiftMeta } from "../page"
 
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-import { ApiList } from "@/components/ui/api-list";
 
 import { columns, ShiftColumn } from "./columns";
 
@@ -19,17 +17,6 @@ interface ShiftClientProps {
 export const ShiftClient: React.FC<ShiftClientProps> = ({ data }) => {
   const params = useParams();
   const router = useRouter();
-
-  // CHANGE ALL THE DATA HERE FOR THE CELLS
-  // console.log("DATA COLUMNS", columns);
-  // let employeeHoursTemp = {};
-  // function fillInEmployeeShifts() {
-  //   //if column accessorKey => "startTime" than change the bg color of the cell and if the column is < the endTime do nothing
-  //   data.map((item) => {
-  //     const startTime = item.startTime;
-  //     const endTime = item.endTime;
-  //   });
-  // }
 
   return (
     <>

@@ -36,7 +36,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       router.refresh();
     } catch (error) {
       toast.error(
-        "Make sure you removed all categories using this shift first."
+        "Make sure you remove all Bookings in Shift first."
       );
     } finally {
       setOpen(false);

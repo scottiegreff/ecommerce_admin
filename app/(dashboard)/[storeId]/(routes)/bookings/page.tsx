@@ -35,44 +35,8 @@ const BookingsPage = async ({ params }: { params: { storeId: string } }) => {
     },
   });
 
-  // const customers = await prismadb.customer.findMany({
-  //   where: {
-  //     storeId: params.storeId,
-  //   },
-  // });
-
-  // const services = await prismadb.service.findMany({
-  //   where: {
-  //     storeId: params.storeId,
-  //   },
-  //   select: {
-  //     name: true,
-  //   },
-  // });
-
-  // const employees = await prismadb.employee.findMany({
-  //   where: {
-  //     storeId: params.storeId,
-  //   },
-  // });
-
-  const shifts = await prismadb.shift.findMany({
-    where: {
-      storeId: params.storeId,
-    },
-  });
-
-  // date: string;
-  // startTime: string;
-  // custFName: string;
-  // custLName: string;
-  // email: string;
-  // phone: string;
-  // name: string;
-  // fName: string;
-  // lName: string;
-
   const formattedBookings: BookingColumn[] = bookings.map((item) => ({
+    bookingId: item.id,
     date: format(item.date, "MMMM do, yyyy"),
     startTime: item.startTime,
     custFName: item.customer.custFName,

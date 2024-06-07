@@ -29,6 +29,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [loading, setLoading] = useState(false);
 
   const onConfirm = async () => {
+    console.log("data", data.bookingId);
     try {
       setLoading(true);
       await axios.delete(`/api/${params.storeId}/bookings/${data?.bookingId}`);
@@ -70,13 +71,13 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           <DropdownMenuItem onClick={() => onCopy(data?.bookingId)}>
             <Copy className="mr-2 h-4 w-4" /> Copy Id
           </DropdownMenuItem>
-          <DropdownMenuItem
+          {/* <DropdownMenuItem
             onClick={() =>
               router.push(`/${params.storeId}/bookings/${data?.bookingId}`)
             }
           >
             <Edit className="mr-2 h-4 w-4" /> Update
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
           <DropdownMenuItem onClick={() => setOpen(true)}>
             <Trash className="mr-2 h-4 w-4" /> Delete
           </DropdownMenuItem>
