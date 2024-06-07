@@ -84,13 +84,10 @@ const BookingForm: React.FC<BookingFormProps> = ({ data }) => {
     console.log("DATA: ", data);
     try {
       setLoading(true);
-      const response = await fetch(
-        `/api/${params.storeId}/bookings`,
-        {
-          method: "POST",
-          body: JSON.stringify(data),
-        }
-      );
+      const response = await fetch(`/api/${params.storeId}/bookings`, {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
       const responseData = await response.json(); // Access the response data
       router.refresh();
       toast.success(bookingToastMessage);
@@ -234,14 +231,14 @@ const BookingForm: React.FC<BookingFormProps> = ({ data }) => {
     if (!appointmentDuration) {
       return [];
     }
-    appointmentDuration = appointmentDuration * 60 * 1000;
+    appointmentDuration = appointmentDuration * 60 * 1000 ?? 60;
     for (
       let time = new Date(shiftStart.getTime());
       time.getTime() + appointmentDuration <= shiftEnd.getTime();
       time.setTime(time.getTime() + interval)
     ) {
       const appointmentEnd = new Date(time.getTime() + appointmentDuration);
-
+      // if()
       const isBooked = bookedTimes.some((bookedTime) => {
         const bookedEnd = new Date(bookedTime.getTime() + appointmentDuration);
         return time < bookedEnd && appointmentEnd > bookedTime;
