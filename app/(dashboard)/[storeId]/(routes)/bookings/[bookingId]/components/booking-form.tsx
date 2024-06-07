@@ -85,7 +85,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ data }) => {
     try {
       setLoading(true);
       const response = await fetch(
-        `/api/${params.storeId}/bookingsStorePost`,
+        `/api/${params.storeId}/bookings`,
         {
           method: "POST",
           body: JSON.stringify(data),
