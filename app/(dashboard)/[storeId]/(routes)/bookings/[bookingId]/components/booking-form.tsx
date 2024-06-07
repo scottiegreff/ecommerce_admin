@@ -230,20 +230,22 @@ const BookingForm: React.FC<BookingFormProps> = ({ data }) => {
     const interval = 15 * 60 * 1000; // 15 minutes in milliseconds
     // Ensure appointmentDuration is defined and convert to milliseconds
     let appointmentDuration = service?.duration;
-    if (!appointmentDuration) {
-      // Set a default duration if service.duration is undefined
-      appointmentDuration = 60; // Default duration in minutes
-    }
-    appointmentDuration = appointmentDuration * 60 * 1000; // Convert minutes to milliseconds
+
+    appointmentDuration = (appointmentDuration ?? 0) * 60 * 1000; // Convert minutes to milliseconds
     for (
       let time = new Date(shiftStart.getTime());
-      time.getTime() + appointmentDuration <= shiftEnd.getTime();
+      time.getTime() + (appointmentDuration ?? 60) <= shiftEnd.getTime();
       time.setTime(time.getTime() + interval)
     ) {
-      const appointmentEnd = new Date(time.getTime() + appointmentDuration);
+      const appointmentDuration = service?.duration;
+      const appointmentEnd = new Date(
+        time.getTime() + (appointmentDuration ?? 60)
+      );
       // Check if the current time slot overlaps with any booked times
       const isBooked = bookedTimes.some((bookedTime) => {
-        const bookedEnd = new Date(bookedTime.getTime() + appointmentDuration);
+        const bookedEnd = new Date(
+          bookedTime.getTime() + (appointmentDuration ?? 60)
+        );
         return time < bookedEnd && appointmentEnd > bookedTime;
       });
       if (!isBooked) {
