@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export default authMiddleware({
   publicRoutes: ["/api/:path*"],
-  ignoredRoutes: ["localhost:3001/api/:path*"],
+  ignoredRoutes: [`${process.env.MIDDLEWARE_FRONTEND_SUBDOMAIN}/api/:path*`],
   // debug: true,
 });
 

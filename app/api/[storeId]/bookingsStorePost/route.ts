@@ -4,9 +4,9 @@ import { sendMail } from "@/lib/emails/mailService";
 import { getDate, sub, format, add } from "date-fns";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "http://localhost:3001",
+  "Access-Control-Allow-Origin": `${process.env.FRONTEND_STORE_URL}`,
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, ",
 };
 
 export async function OPTIONS() {
@@ -104,7 +104,7 @@ export async function POST(
     const to: string = email || "";
     const subject: string = "Appointment Confirmation";
     const mailTemplate: string = `<body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #000000; border-radius: 20px  ">
-    <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #333 border-radius: 20px;">
+    <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #FFFFFF border-radius: 20px;">
         <h1 style="text-align: center; color: #FFFFFF;">Ziggy's Salon</h3>
         <h3 style="text-align: center; color: #FFFFFF;">Welcome</h1>
         <p style="text-align: center; color: #FFFFFF;">Your appointment is on ${dateFormatted} at ${startTimeFormatted}</p>

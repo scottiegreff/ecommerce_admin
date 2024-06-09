@@ -4,7 +4,7 @@ import { sendMail } from "@/lib/emails/mailService";
 import { getDate, sub, format, add } from "date-fns";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "http://localhost:3001",
+  "Access-Control-Allow-Origin": `${process.env.FRONTEND_STORE_URL}`,
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
