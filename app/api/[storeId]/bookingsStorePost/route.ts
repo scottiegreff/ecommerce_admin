@@ -17,15 +17,15 @@ export async function POST(
   req: Request,
   { params }: { params: { storeId: string } }
 ) {
-  const { employeeId, shiftId, serviceId, date, startTime, customerId, email } =
+  const { employeeId, shiftId, serviceId, startOfBooking, endOfBooking, customerId, email } =
     await req.json();
   console.log(
     "BOOKING FROM API",
     employeeId,
     shiftId,
     serviceId,
-    date,
-    startTime,
+    startOfBooking,
+    endOfBooking,
     customerId,
     email
   );
@@ -52,11 +52,11 @@ export async function POST(
       return new NextResponse("Employee Id is required", { status: 400 });
     }
 
-    if (!date) {
+    if (!startOfBooking) {
       return new NextResponse("Date is required", { status: 400 });
     }
 
-    if (!startTime) {
+    if (!endOfBooking) {
       return new NextResponse("Start Time is required", { status: 400 });
     }
 
@@ -77,8 +77,8 @@ export async function POST(
         storeId: params.storeId,
         serviceId: serviceId,
         employeeId: employeeId,
-        date: date,
-        startTime: startTime,
+        startOfBooking: startOfBooking,
+        endOfBooking: endOfBooking,
         shiftId: shiftId,
         customerId: customerId,
       },
@@ -98,8 +98,8 @@ export async function POST(
       return `${hours}:${minutes}`;
     };
 
-    const dateFormatted = format(new Date(date), "MMMM do, yyyy");
-    const startTimeFormatted = formatTime(startTime);
+    const dateFormatted = format(new Date(startOfBooking), "MMMM do, yyyy");
+    // const startTimeFormatted = formatTime(startTime);
     const from: string = "scottiegreff@gmail.com";
     const to: string = email || "";
     const subject: string = "Appointment Confirmation";
@@ -107,7 +107,7 @@ export async function POST(
     <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #FFFFFF border-radius: 20px;">
         <h1 style="text-align: center; color: #FFFFFF;">Ziggy's Salon</h3>
         <h3 style="text-align: center; color: #FFFFFF;">Welcome</h1>
-        <p style="text-align: center; color: #FFFFFF;">Your appointment is on ${dateFormatted} at ${startTimeFormatted}</p>
+        <p style="text-align: center; color: #FFFFFF;">Your appointment is on ${dateFormatted}</p>
         <div style="text-align: center;">
             <img src="cid:unique@gmail.com" width="400" alt="Welcome Image" style="border: none; border-radius: 20px;"/>
         </div>

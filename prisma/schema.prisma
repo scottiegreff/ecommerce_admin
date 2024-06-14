@@ -23,23 +23,23 @@ model Billboard {
 // Booking > Service m-n, Service > Booking m-n
 // Shift > Booking m-n, Booking > Shift 1-1
 model Booking {
-  id          String    @id @default(uuid())
-  storeId     String
-  serviceId   String
-  date        DateTime
-  startTime   Int
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime?
+  id              String    @id @default(uuid())
+  storeId         String
+  serviceId       String
+  startOfBooking  DateTime
+  endOfBooking    DateTime
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime?
   // orderItemId String
-  shiftId     String
-  employeeId  String
-  customerId  String
+  shiftId         String
+  employeeId      String
+  customerId      String
   // orderItems  OrderItem[]
-  store       Store      @relation("StoreToBooking", fields: [storeId], references: [id])
-  customer    Customer   @relation(fields: [customerId], references: [id])
-  employee    Employee   @relation(fields: [employeeId], references: [id])
-  service     Service[]
-  shift       Shift      @relation(fields: [shiftId], references: [id])
+  store           Store      @relation("StoreToBooking", fields: [storeId], references: [id])
+  customer        Customer   @relation(fields: [customerId], references: [id])
+  employee        Employee   @relation(fields: [employeeId], references: [id])
+  service         Service[]
+  shift           Shift      @relation(fields: [shiftId], references: [id])
 
   @@index([storeId])
 }
@@ -219,9 +219,8 @@ model Shift {
   id         String    @id @default(uuid())
   storeId    String
   employeeId String
-  date       DateTime
-  startTime  Int
-  endTime    Int
+  startShift DateTime
+  endShift   DateTime
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   bookings   Booking[]

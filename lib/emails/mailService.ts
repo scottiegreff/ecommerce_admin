@@ -30,8 +30,8 @@ export const sendMail = async (
     html: html,
     attachments: [
       {
-        filename: "pic.jpg",
-        path: "public/images/pic.jpg",
+        filename: "pol.jpg",
+        path: "public/images/pol.jpg",
         cid: "unique@gmail.com",
       },
     ],

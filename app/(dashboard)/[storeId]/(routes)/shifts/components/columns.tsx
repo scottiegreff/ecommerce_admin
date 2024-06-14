@@ -8,9 +8,8 @@ export type ShiftColumn = {
   shiftId: string;
   fName: string;
   lName: string;
-  date: string;
-  startTime: number;
-  endTime: number;
+  startShift: string;
+  endShift: string;
 };
 
 export const columns: ColumnDef<ShiftColumn>[] = [
@@ -23,15 +22,11 @@ export const columns: ColumnDef<ShiftColumn>[] = [
     header: "Last",
   },
   {
-    accessorKey: "date",
-    header: "Date",
-  },
-  {
-    accessorKey: "startTime",
+    accessorKey: "startShift",
     header: "Start",
   },
   {
-    accessorKey: "endTime",
+    accessorKey: "endShift",
     header: "End",
   },
 

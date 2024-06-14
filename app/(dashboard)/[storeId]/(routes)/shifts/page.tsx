@@ -6,15 +6,6 @@ import { ShiftColumn } from "./components/columns";
 import { ShiftClient } from "./components/client";
 import { id } from "date-fns/locale";
 
-
-// export type ShiftMeta = {
-//   shiftId: string;
-//   fName: string;
-//   lName: string;
-//   date: string;
-//   startTime: number;
-//   endTime: number;
-// };
 const ShiftsPage = async ({ params }: { params: { storeId: string } }) => {
   const shifts = await prismadb.shift.findMany({
     where: {
@@ -37,9 +28,8 @@ const ShiftsPage = async ({ params }: { params: { storeId: string } }) => {
     shiftId: item.id,
     fName: item.employee.fName,
     lName: item.employee.lName,
-    date: format(item.date, "MMMM do, yyyy"),
-    startTime: item.startTime,
-    endTime: item.endTime,
+    startShift: format(item.startShift, "MMMM do yyy - h:mm a"),
+    endShift: format(item.endShift, "h:mm a"),
   }));
 
 

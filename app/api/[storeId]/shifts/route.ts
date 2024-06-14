@@ -47,42 +47,33 @@ export async function POST(
 ) {
   try {
     const { userId } = auth();
+    const storeId = params.storeId;
 
     const body = await req.json();
 
-    const { to, from, startTime, endTime, employeeId, storeId } = body;
+    const { employeeId, shiftDateAndTime } = body;
 
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 403 });
-    }
-
-    if (!from) {
-      return new NextResponse("Start Date is required", { status: 400 });
-    }
-
-    if (!to) {
-      return new NextResponse("End Date is required", { status: 400 });
-    }
-
-    if (!startTime) {
-      return new NextResponse("Start Time is required", { status: 400 });
-    }
-
-    if (!endTime) {
-      return new NextResponse("End Time is required", { status: 400 });
-    }
-
-    if (!employeeId) {
-      return new NextResponse("Employee Id is required", { status: 400 });
     }
 
     if (!storeId) {
       return new NextResponse("Store id is required", { status: 400 });
     }
 
+    if (!employeeId) {
+      return new NextResponse("Employee Id is required", { status: 400 });
+    }
+
+    if (!shiftDateAndTime) {
+      return new NextResponse("Shift Date and Time is required", {
+        status: 400,
+      });
+    }
+
     const storeByUserId = await prismadb.store.findFirst({
       where: {
-        id: storeId,
+        id: params.storeId,
         userId,
       },
     });
@@ -91,35 +82,50 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 405 });
     }
 
-    var dates: Date[] = [];
-    var currentDate = new Date(from);
-    var endDate = new Date(to);
+    // check to see if employee is working that day
+    const shiftByEmployeeId = await prismadb.shift.findFirst({
+      where: {
+        employeeId,
+        storeId,
+        startShift: {
+          lte: shiftDateAndTime[0].startDateAndTime,
+        },
+        endShift: {
+          gte: shiftDateAndTime[0].endDateAndTime,
+        },
+      },
+    });
 
-    while (currentDate <= endDate) {
-      dates.push(new Date(currentDate));
-      currentDate.setDate(currentDate.getDate() + 1);
+    if (shiftByEmployeeId) {
+      return new NextResponse("Employee is already working that day", {
+        status: 400,
+      });
     }
-    
-    for (let i = 0; i < dates.length; i++) {
-      const shift = await prismadb.shift.create({
+
+   
+    let shift; // Declare the 'shift' variable
+
+    for (let i = 0; i < shiftDateAndTime.length; i++) {
+      shift = await prismadb.shift.create({
         data: {
           storeId,
           employeeId,
-          date: dates[i], // Access date from dates array using dates[i]
-          startTime,
-          endTime,
+          startShift: shiftDateAndTime[i].startDateAndTime,
+          endShift: shiftDateAndTime[i].endDateAndTime,
         },
       });
+      console.log("SHIFT: ", shift);
     }
-    // You might want to handle the response for each shift here
-  } catch (error) {
-    console.log("[SHIFT_POST]", error);
+
+    return NextResponse.json(shift);
+  }
+  catch (error) {
+    console.log("[SHIFTS_POST]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
-
-  // If you need to return a response after all shifts are created, place it outside the loop
-  return new NextResponse("Shifts created successfully", { status: 200 });
 }
+
+
 
 export async function DELETE(
   req: Request,
@@ -162,75 +168,75 @@ export async function DELETE(
   }
 }
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: { shiftId: string; storeId: string } }
-) {
-  try {
-    const { userId } = auth();
+// export async function PATCH(
+//   req: Request,
+//   { params }: { params: { shiftId: string; storeId: string } }
+// ) {
+//   try {
+//     const { userId } = auth();
 
-    const body = await req.json();
+//     const body = await req.json();
 
-    const { startTime, endTime } = body;
+//     const { startTime, endTime } = body;
 
-    if (!userId) {
-      return new NextResponse("Unauthenticated", { status: 403 });
-    }
+//     if (!userId) {
+//       return new NextResponse("Unauthenticated", { status: 403 });
+//     }
 
-    if (!params.shiftId) {
-      return new NextResponse("Shift id is required", { status: 400 });
-    }
+//     if (!params.shiftId) {
+//       return new NextResponse("Shift id is required", { status: 400 });
+//     }
 
-    if (!startTime) {
-      return new NextResponse("Shift's START tIme id is required", {
-        status: 400,
-      });
-    }
+//     if (!startTime) {
+//       return new NextResponse("Shift's START tIme id is required", {
+//         status: 400,
+//       });
+//     }
 
-    if (!endTime) {
-      return new NextResponse("Shift's END tIme id is required", {
-        status: 400,
-      });
-    }
+//     if (!endTime) {
+//       return new NextResponse("Shift's END tIme id is required", {
+//         status: 400,
+//       });
+//     }
 
-    // Check if the store exists and belongs to the user
-    const storeByUserId = await prismadb.store.findFirst({
-      where: {
-        id: params.storeId,
-        userId,
-      },
-    });
+//     // Check if the store exists and belongs to the user
+//     const storeByUserId = await prismadb.store.findFirst({
+//       where: {
+//         id: params.storeId,
+//         userId,
+//       },
+//     });
 
-    if (!storeByUserId) {
-      return new NextResponse("Unauthorized", { status: 405 });
-    }
+//     if (!storeByUserId) {
+//       return new NextResponse("Unauthorized", { status: 405 });
+//     }
 
-    await prismadb.shift.update({
-      where: {
-        id: params.shiftId,
-      },
-      data: {
-        startTime,
-        endTime,
-      },
-    });
+//     await prismadb.shift.update({
+//       where: {
+//         id: params.shiftId,
+//       },
+//       data: {
+//         startTime,
+//         endTime,
+//       },
+//     });
 
-    const shift = await prismadb.shift.findUnique({
-      where: {
-        id: params.shiftId,
-      },
-      // data: {
-      //   images: {
-      //     createMany: {
-      //       data: [...images.map((image: { url: string }) => image)],
-      //     },
-      //   },
-      // },
-    });
+//     const shift = await prismadb.shift.findUnique({
+//       where: {
+//         id: params.shiftId,
+//       },
+//       // data: {
+//       //   images: {
+//       //     createMany: {
+//       //       data: [...images.map((image: { url: string }) => image)],
+//       //     },
+//       //   },
+//       // },
+//     });
 
-    return NextResponse.json(shift);
-  } catch (error) {
-    console.log("[employee_PATCH]", error);
-    return new NextResponse("Internal error", { status: 500 });
-  }
-}
+//     return NextResponse.json(shift);
+//   } catch (error) {
+//     console.log("[employee_PATCH]", error);
+//     return new NextResponse("Internal error", { status: 500 });
+//   }
+// }

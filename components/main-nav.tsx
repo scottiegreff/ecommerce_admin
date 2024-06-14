@@ -20,7 +20,7 @@ export function MainNav({
     },
     {
       href: `/${params.storeId}/heros`,
-      label: "Heros",
+      label: "Hero",
       active: pathname === `/${params.storeId}/heros`,
     },
     {
@@ -32,6 +32,10 @@ export function MainNav({
       href: `/${params.storeId}/categories`,
       label: "Categories",
       active: pathname === `/${params.storeId}/categories`,
+    },
+    {
+      href: `/${params.storeId}`,
+      label: "|",
     },
     {
       href: `/${params.storeId}/sizes`,
@@ -49,9 +53,8 @@ export function MainNav({
       active: pathname === `/${params.storeId}/products`,
     },
     {
-      href: `/${params.storeId}/orders`,
-      label: "Orders",
-      active: pathname === `/${params.storeId}/orders`,
+      href: `/${params.storeId}`,
+      label: "|",
     },
     {
       href: `/${params.storeId}/employees`,
@@ -78,6 +81,15 @@ export function MainNav({
       label: "Customers",
       active: pathname === `/${params.storeId}/customers`,
     },
+    {
+      href: `/${params.storeId}`,
+      label: "|",
+    },
+    {
+      href: `/${params.storeId}/orders`,
+      label: "Orders",
+      active: pathname === `/${params.storeId}/orders`,
+    },
 
     {
       href: `/${params.storeId}/settings`,
@@ -96,7 +108,7 @@ export function MainNav({
           key={route.href}
           href={route.href}
           className={cn(
-            "text-sm flex flex-wrap  font-medium transition-colors hover:text-primary",
+            "text-sm flex flex-wrap font-medium transition-colors pb-2 hover:text-primary",
             route.active
               ? "text-black dark:text-white"
               : "text-muted-foreground"

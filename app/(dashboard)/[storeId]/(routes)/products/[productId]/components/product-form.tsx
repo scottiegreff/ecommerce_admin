@@ -130,7 +130,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     />
      <div className="flex items-center justify-between">
         <Heading title={title} description={description} />
-        {initialData && (
+          {initialData && (
           <Button
             disabled={loading}
             variant="destructive"

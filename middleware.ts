@@ -1,12 +1,17 @@
 import { authMiddleware } from "@clerk/nextjs";
-import { is } from "date-fns/locale";
 import { NextRequest, NextResponse } from "next/server";
+// import { clerkMiddleware } from "@clerk/nextjs/server";
+// import { createRouteMatcher } from "@clerk/nextjs/server";
 
 export default authMiddleware({
   publicRoutes: ["/api/:path*"],
-  ignoredRoutes: [`${process.env.MIDDLEWARE_FRONTEND_SUBDOMAIN}/api/:path*`],
+  // ignoredRoutes: [`${process.env.MIDDLEWARE_FRONTEND_SUBDOMAIN}/api/:path*`],
   // debug: true,
 });
+// const isProtectedRoute = createRouteMatcher([
+//   '/dashboard(.*)',
+//   '/forum(.*)',
+// ]);
 
 // export async function middleware(req: NextRequest) {
 //   if (req.nextUrl.pathname.startsWith("/api/shiftsStore")) {
@@ -24,5 +29,5 @@ export default authMiddleware({
 // }
 
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", '/(api|trpc)(.*)'],
+  matcher: ['/((?!.*\\..*|_next).*)', '/', '/(api|trpc)(.*)'],
 };

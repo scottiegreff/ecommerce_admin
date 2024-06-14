@@ -31,8 +31,8 @@ export async function POST(
     if (!storeByUserId) {
       return new NextResponse("Unauthorized", { status: 405 });
     }
-    const date = new Date();
-    date.setDate(date.getDate() - 1);
+    const currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() - 1);
     // const convertLocalToUTC0 = function (date: Date) {
     //   const offset = date.getTimezoneOffset();
     //   const dateUTC0 = add(date, { minutes: offset });
@@ -46,8 +46,8 @@ export async function POST(
       where: {
         storeId: params.storeId,
         employeeId: employeeId,
-        date: {
-          gte: date,
+        startShift: {
+          gte: currentDate,
         },
       },
     });

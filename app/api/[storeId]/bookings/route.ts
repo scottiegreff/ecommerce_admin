@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import prismadb from "@/lib/prismadb";
 import { sendMail } from "@/lib/emails/mailService";
-import { getDate, sub, format, add } from "date-fns";
+import { format } from "date-fns";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": `${process.env.FRONTEND_STORE_URL}`,
@@ -17,18 +17,25 @@ export async function POST(
   req: Request,
   { params }: { params: { storeId: string } }
 ) {
-  const { employeeId, shiftId, serviceId, date, startTime, customerId, email } =
-    await req.json();
-  console.log(
-    "BOOKING FROM API",
+  const {
     employeeId,
     shiftId,
     serviceId,
-    date,
-    startTime,
+    startOfBooking,
+    endOfBooking,
     customerId,
-    email
-  );
+    email,
+  } = await req.json();
+  // console.log(
+  //   "BOOKING FROM API",
+  //   employeeId,
+  //   shiftId,
+  //   serviceId,
+  //   startOfBooking,
+  //   endOfBooking,
+  //   customerId,
+  //   email
+  // );
   try {
     if (!params.storeId) {
       return new NextResponse("Store id is required", { status: 400 });
@@ -52,12 +59,12 @@ export async function POST(
       return new NextResponse("Employee Id is required", { status: 400 });
     }
 
-    if (!date) {
-      return new NextResponse("Date is required", { status: 400 });
+    if (!startOfBooking) {
+      return new NextResponse("Start of Booking is required", { status: 400 });
     }
 
-    if (!startTime) {
-      return new NextResponse("Start Time is required", { status: 400 });
+    if (!endOfBooking) {
+      return new NextResponse("End of Booking is required", { status: 400 });
     }
 
     if (!shiftId) {
@@ -77,8 +84,8 @@ export async function POST(
         storeId: params.storeId,
         serviceId: serviceId,
         employeeId: employeeId,
-        date: date,
-        startTime: startTime,
+        startOfBooking: startOfBooking,
+        endOfBooking: endOfBooking,
         shiftId: shiftId,
         customerId: customerId,
       },
@@ -98,21 +105,21 @@ export async function POST(
       return `${hours}:${minutes}`;
     };
 
-    const dateFormatted = format(new Date(date), "MMMM do, yyyy");
-    const startTimeFormatted = formatTime(startTime);
+    const startFormatted = format(new Date(startOfBooking), "MMMM do, yyyy, h:mm a");
+    const endFormatted = format(new Date(endOfBooking), "h:mm a");
     const from: string = "scottiegreff@gmail.com";
     const to: string = email || "";
     const subject: string = "Ziggy's Hair Appointment Confirmation";
-    const mailTemplate: string = `<body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #000000; border-radius: 20px  ">
+    const mailTemplate: string = `<body style="font-family: Arial, sans-serif; font-weight: 200; margin: 0; padding: 20px; background: #000000; border-radius: 20px  ">
     <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #333 border-radius: 20px;">
-        <h1 style="text-align: center; color: #FFFFFF;">Ziggy's Salon</h3>
+        <h1 style="text-align: center; color: #FFFFFF;">Prisoner Of Love Studio</h3>
         <h3 style="text-align: center; color: #FFFFFF;">Welcome</h1>
-        <p style="text-align: center; color: #FFFFFF;">Your appointment is on ${dateFormatted} at ${startTimeFormatted}</p>
+        <p style="text-align: center; color: #FFFFFF;">Your appointment is on <strong style="font-weight: 900;">${startFormatted}</strong></p>
         <div style="text-align: center;">
-            <img src="cid:unique@gmail.com" width="400" alt="Welcome Image" style="border: none; border-radius: 20px;"/>
+            <img src="cid:unique@gmail.com" width="400" alt="Prisoner Of Life Logo" style="border: none; border-radius: 20px;"/>
         </div>
-        <p style="text-align: center; color: #FFFFFF;">If you have any questions, feel free to reach out to Ziggy @ .</p>
-        <p style="text-align: center; color: #FFFFFF;">Thank you.</p>
+        <p style="text-align: center; color: #FFFFFF;">If you have any questions, feel free to reach out to:</p>
+        <p style="text-align: center; color: #FFFFFF;">Ziggy at (604) 441-1635 or ziggydoeshair@gmail.com</p>
     </div>
 </body>`;
 

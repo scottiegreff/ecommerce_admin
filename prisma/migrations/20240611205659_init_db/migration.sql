@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "ItemType" AS ENUM ('GOODS', 'SERVICES');
+
 -- CreateTable
 CREATE TABLE "Billboard" (
     "id" TEXT NOT NULL,
@@ -15,13 +18,12 @@ CREATE TABLE "Booking" (
     "id" TEXT NOT NULL,
     "storeId" TEXT NOT NULL,
     "serviceId" TEXT NOT NULL,
-    "date" TIMESTAMP(3) NOT NULL,
-    "startTime" INTEGER NOT NULL,
-    "endTime" INTEGER NOT NULL,
+    "startOfBooking" TIMESTAMP(3) NOT NULL,
+    "endOfBooking" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
-    "orderItemId" TEXT NOT NULL,
     "shiftId" TEXT NOT NULL,
+    "employeeId" TEXT NOT NULL,
     "customerId" TEXT NOT NULL,
 
     CONSTRAINT "Booking_pkey" PRIMARY KEY ("id")
@@ -35,6 +37,7 @@ CREATE TABLE "Category" (
     "name" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "itemType" "ItemType" NOT NULL,
 
     CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
 );
@@ -107,7 +110,6 @@ CREATE TABLE "Image" (
 CREATE TABLE "Order" (
     "id" TEXT NOT NULL,
     "storeId" TEXT NOT NULL,
-    "customerId" TEXT NOT NULL,
     "isPaid" BOOLEAN NOT NULL DEFAULT false,
     "phone" TEXT NOT NULL DEFAULT '',
     "address" TEXT NOT NULL DEFAULT '',
@@ -120,10 +122,8 @@ CREATE TABLE "Order" (
 -- CreateTable
 CREATE TABLE "OrderItem" (
     "id" TEXT NOT NULL,
-    "customerId" TEXT NOT NULL,
     "orderId" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
-    "bookingId" TEXT NOT NULL,
 
     CONSTRAINT "OrderItem_pkey" PRIMARY KEY ("id")
 );
@@ -151,6 +151,7 @@ CREATE TABLE "Service" (
     "storeId" TEXT NOT NULL,
     "categoryId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "description" TEXT,
     "duration" INTEGER NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
     "isFeatured" BOOLEAN NOT NULL DEFAULT false,
@@ -166,9 +167,8 @@ CREATE TABLE "Shift" (
     "id" TEXT NOT NULL,
     "storeId" TEXT NOT NULL,
     "employeeId" TEXT NOT NULL,
-    "date" TIMESTAMP(3) NOT NULL,
-    "startTime" INTEGER NOT NULL,
-    "endTime" INTEGER NOT NULL,
+    "startShift" TIMESTAMP(3) NOT NULL,
+    "endShift" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -202,6 +202,12 @@ CREATE TABLE "Store" (
 
 -- CreateTable
 CREATE TABLE "_BookingToService" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_EmployeeToService" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
 );
@@ -252,12 +258,6 @@ CREATE INDEX "OrderItem_orderId_idx" ON "OrderItem"("orderId");
 CREATE INDEX "OrderItem_productId_idx" ON "OrderItem"("productId");
 
 -- CreateIndex
-CREATE INDEX "OrderItem_bookingId_idx" ON "OrderItem"("bookingId");
-
--- CreateIndex
-CREATE INDEX "OrderItem_customerId_idx" ON "OrderItem"("customerId");
-
--- CreateIndex
 CREATE INDEX "Product_storeId_idx" ON "Product"("storeId");
 
 -- CreateIndex
@@ -290,6 +290,12 @@ CREATE UNIQUE INDEX "_BookingToService_AB_unique" ON "_BookingToService"("A", "B
 -- CreateIndex
 CREATE INDEX "_BookingToService_B_index" ON "_BookingToService"("B");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "_EmployeeToService_AB_unique" ON "_EmployeeToService"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_EmployeeToService_B_index" ON "_EmployeeToService"("B");
+
 -- AddForeignKey
 ALTER TABLE "Billboard" ADD CONSTRAINT "Billboard_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -298,6 +304,9 @@ ALTER TABLE "Booking" ADD CONSTRAINT "Booking_storeId_fkey" FOREIGN KEY ("storeI
 
 -- AddForeignKey
 ALTER TABLE "Booking" ADD CONSTRAINT "Booking_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Booking" ADD CONSTRAINT "Booking_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Employee"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Booking" ADD CONSTRAINT "Booking_shiftId_fkey" FOREIGN KEY ("shiftId") REFERENCES "Shift"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -324,22 +333,13 @@ ALTER TABLE "Image" ADD CONSTRAINT "Image_productId_fkey" FOREIGN KEY ("productI
 ALTER TABLE "Image" ADD CONSTRAINT "Image_serviceId_fkey" FOREIGN KEY ("serviceId") REFERENCES "Service"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Order" ADD CONSTRAINT "Order_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_bookingId_fkey" FOREIGN KEY ("bookingId") REFERENCES "Booking"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -373,3 +373,9 @@ ALTER TABLE "_BookingToService" ADD CONSTRAINT "_BookingToService_A_fkey" FOREIG
 
 -- AddForeignKey
 ALTER TABLE "_BookingToService" ADD CONSTRAINT "_BookingToService_B_fkey" FOREIGN KEY ("B") REFERENCES "Service"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_EmployeeToService" ADD CONSTRAINT "_EmployeeToService_A_fkey" FOREIGN KEY ("A") REFERENCES "Employee"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_EmployeeToService" ADD CONSTRAINT "_EmployeeToService_B_fkey" FOREIGN KEY ("B") REFERENCES "Service"("id") ON DELETE CASCADE ON UPDATE CASCADE;

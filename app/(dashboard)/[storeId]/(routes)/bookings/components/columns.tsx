@@ -6,8 +6,8 @@ import { CellAction } from "./cell-action";
 
 export type BookingColumn = {
   bookingId: string;
-  date: string;
-  startTime: number;
+  startOfBooking: string;
+  endOfBooking: string;
   custFName: string;
   custLName: string;
   email: string;
@@ -19,12 +19,12 @@ export type BookingColumn = {
 
 export const columns: ColumnDef<BookingColumn>[] = [
   {
-    accessorKey: "date",
-    header: "Date",
+    accessorKey: "startOfBooking",
+    header: "Apt. Start",
   },
   {
-    accessorKey: "startTime",
-    header: "Start Time",
+    accessorKey: "endOfBooking",
+    header: "Apt. End",
   },
   {
     accessorKey: "name",

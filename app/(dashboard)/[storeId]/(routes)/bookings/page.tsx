@@ -21,6 +21,7 @@ const BookingsPage = async ({ params }: { params: { storeId: string } }) => {
       service: {
         select: {
           name: true,
+          duration: true,
         },
       },
       employee: {
@@ -31,14 +32,14 @@ const BookingsPage = async ({ params }: { params: { storeId: string } }) => {
       },
     },
     orderBy: {
-      date: "desc",
+      startOfBooking: "desc",
     },
   });
 
   const formattedBookings: BookingColumn[] = bookings.map((item) => ({
     bookingId: item.id,
-    date: format(item.date, "MMMM do, yyyy"),
-    startTime: item.startTime,
+    startOfBooking: format(item.startOfBooking, "MMMM do, yyyy"),
+    endOfBooking: format(item.endOfBooking, "MMMM do, yyyy"),
     custFName: item.customer.custFName,
     custLName: item.customer.custLName,
     email: item.customer.email,

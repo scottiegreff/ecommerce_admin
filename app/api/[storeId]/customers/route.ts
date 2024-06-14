@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs";
 import { sendMail } from "@/lib/emails/mailService";
 import prismadb from "@/lib/prismadb";
 
@@ -93,8 +92,8 @@ export async function POST(
         <div style="text-align: center;">
             <img src="cid:unique@gmail.com" width="400" alt="Welcome Image" style="border: none; border-radius: 20px;"/>
         </div>
-        <p style="text-align: center; color: #FFFFFF;">If you have any questions, feel free to reach out to Ziggy @ .</p>
-        <p style="text-align: center; color: #FFFFFF;">Thank you.</p>
+        <p style="text-align: center; color: #FFFFFF;">If you have any questions, feel free to reach out to:</p>
+        <p style="text-align: center; color: #FFFFFF;">Ziggy at (604) 441-1635 or ziggydoeshair@gmail.com</p>
     </div>
 </body>`;
 

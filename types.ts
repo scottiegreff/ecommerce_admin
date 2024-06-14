@@ -5,10 +5,13 @@ export interface Billboard {
 }
 export interface Booking {
   id: string;
-  date:  Date;
-  startTime: number;
-  endTime: number;
+  startOfBooking: Date;
+  endOfBooking: Date;
   serviceId: string;
+}
+export interface BookingStartAndEnd {
+  startOfBooking: string;
+  endOfBooking: string;
 }
 export interface Category {
   id: string;
@@ -55,15 +58,13 @@ export interface Product {
 }
 export interface Service {
   id: string;
-  category: Category;
   name: string;
-  description: string;
-  price: string;
+  description: string | null;
+  price: number;
   isFeatured: boolean;
   duration: number;
-  images: Image[];
-  bookings: Booking[];
 }
+
 export interface Size {
   id: string;
   name: string;
@@ -72,9 +73,8 @@ export interface Size {
 export interface Shift {
   id: string;
   employeeId: string;
-  date: Date;
-  startTime: number;
-  endTime: number;
+  startShift: Date;
+  endShift: Date;
 }
 
 
