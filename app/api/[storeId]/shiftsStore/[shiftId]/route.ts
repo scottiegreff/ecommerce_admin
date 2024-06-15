@@ -35,7 +35,7 @@ export async function GET(
     const shifts = await prismadb.shift.findMany({
       where: {
         storeId: params.storeId,
-        date: {
+        startShift: {
           gte: new Date(),
         }, 
       },
