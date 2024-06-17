@@ -100,9 +100,9 @@ export async function POST(
 
     const dateFormatted = format(new Date(startOfBooking), "MMMM do, yyyy");
     // const startTimeFormatted = formatTime(startTime);
-    const from: string = "scottiegreff@gmail.com";
+    const from: string = `${process.env.MAIL_USERNAME}`;
     const to: string = email || "";
-    const subject: string = "Appointment Confirmation";
+    const subject: string = "Prisoner Of Love Studio - Appointment Confirmation";
     const mailTemplate: string = `<body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #000000; border-radius: 20px  ">
     <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #FFFFFF border-radius: 20px;">
         <h1 style="text-align: center; color: #FFFFFF;">Ziggy's Salon</h3>
@@ -118,7 +118,7 @@ export async function POST(
 
     sendMail(from, to, subject, mailTemplate);
 
-    console.log("BOOKING FROM API RESULT", bookings);
+    // console.log("BOOKING FROM API RESULT", bookings);
 
     return NextResponse.json(bookings, { headers: corsHeaders });
   } catch (error) {

@@ -48,7 +48,7 @@ export async function POST(
       },
     });
 
-    console.log("BOOKING FROM API RESULT", bookings);
+    // console.log("BOOKING FROM API RESULT", bookings);
 
     return NextResponse.json(bookings, { headers: corsHeaders });
   } catch (error) {

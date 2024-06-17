@@ -81,19 +81,18 @@ export async function POST(
       },
     });
 
-    const from: string = "scottiegreff@gmail.com";
+    const from: string =`${process.env.MAIL_USERNAME}`;
     const to: string = email || "";
-    const subject: string = "Welcome to Ziggy Salon";
+    const subject: string = "Welcome to Prisoner Of Love Studio";
     const mailTemplate: string = `<body style="font-family: Arial, sans-serif; margin: 0;  padding: 20px; background: #000000; border-radius: 20px">
     <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #000000 border-radius: 20px;">
-        <h1 style="text-align: center; color: #FFFFFF;">Ziggy's Salon</h3>
-        <h3 style="text-align: center; color: #FFFFFF;">Welcome</h1>
-        <p style="text-align: center; color: #FFFFFF;">You can now book an appointment.</p>
+        <h1 style="text-align: center; font-weight: 200; color: #FFFFFF;">Welcome to Prisoner Of Love Studio</h1>
+        <p style="text-align: center; font-weight: 200; color: #FFFFFF;">You can now book an appointment.</p>
         <div style="text-align: center;">
             <img src="cid:unique@gmail.com" width="400" alt="Welcome Image" style="border: none; border-radius: 20px;"/>
         </div>
-        <p style="text-align: center; color: #FFFFFF;">If you have any questions, feel free to reach out to:</p>
-        <p style="text-align: center; color: #FFFFFF;">Ziggy at (604) 441-1635 or ziggydoeshair@gmail.com</p>
+        <p style="text-align: center; font-weight: 200; color: #FFFFFF;">If you have any questions, feel free to reach out to:</p>
+        <p style="text-align: center; font-weight: 200; color: #FFFFFF;">Ziggy at (604) 441-1635 or ziggydoeshair@gmail.com</p>
     </div>
 </body>`;
 

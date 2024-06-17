@@ -98,7 +98,7 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
   });
 
   const onSubmit = async (data: ServiceFormValues) => {
-    console.log("DATA: ", data);
+    // console.log("DATA: ", data);
     try {
       setLoading(true);
       if (initialData) {
