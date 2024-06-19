@@ -34,7 +34,7 @@ export async function POST(
   });
 
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
-
+  console.log("CART API: ", products, line_items)
   products.forEach((product) => {
     line_items.push({
       quantity: 1,

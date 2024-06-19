@@ -8,6 +8,7 @@ export type BookingColumn = {
   bookingId: string;
   startOfBooking: string;
   endOfBooking: string;
+  service: string;
   custFName: string;
   custLName: string;
   email: string;
@@ -27,7 +28,7 @@ export const columns: ColumnDef<BookingColumn>[] = [
     header: "Apt. End",
   },
   {
-    accessorKey: "name",
+    accessorKey: "service",
     header: "Service",
   },
   {

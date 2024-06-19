@@ -5,6 +5,8 @@ import { useState } from "react";
 import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
+import useCart from "@/hooks/use-cart";
+import getService from "@/actions/get-service";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +27,7 @@ interface CellActionProps {
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const router = useRouter();
   const params = useParams();
+  const cart = useCart();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -36,9 +39,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       toast.success("Booking deleted.");
       router.refresh();
     } catch (error) {
-      toast.error(
-        "An error occurred while deleting the booking"
-      );
+      toast.error("An error occurred while deleting the booking");
     } finally {
       setOpen(false);
       setLoading(false);
@@ -49,6 +50,12 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     navigator.clipboard.writeText(id);
     toast.success("Booking ID copied to clipboard.");
   };
+
+  const onPayNow = (data: BookingColumn) => {
+    console.log("PAY NOW", data);
+    // cart.addItem(data);
+    // router.push(`/${params.storeId}/cart`)
+  }
 
   return (
     <>
@@ -68,16 +75,14 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuItem
+            onClick={() => onPayNow(data)}
+          >
+            <Edit className="mr-2 h-4 w-4" /> PAY NOW
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => onCopy(data?.bookingId)}>
             <Copy className="mr-2 h-4 w-4" /> Copy Id
           </DropdownMenuItem>
-          {/* <DropdownMenuItem
-            onClick={() =>
-              router.push(`/${params.storeId}/bookings/${data?.bookingId}`)
-            }
-          >
-            <Edit className="mr-2 h-4 w-4" /> Update
-          </DropdownMenuItem> */}
           <DropdownMenuItem onClick={() => setOpen(true)}>
             <Trash className="mr-2 h-4 w-4" /> Delete
           </DropdownMenuItem>

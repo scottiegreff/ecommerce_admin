@@ -3,11 +3,25 @@ import { auth } from "@clerk/nextjs";
 
 import prismadb from "@/lib/prismadb";
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": `${process.env.FRONTEND_STORE_URL}`,
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+export async function OPTIONS() {
+  console.log("CORS HEADERS", corsHeaders);
+  return NextResponse.json({}, { headers: corsHeaders });
+}
+
 export async function GET(
   req: Request,
   { params }: { params: { storeId: string } }
 ) {
   try {
+    const { searchParams } = new URL(req.url);
+    const employeeId = searchParams.get("employeeId") || undefined;
+    console.log("HERE", employeeId);
     // const { userId } = auth();
 
     // if (!userId) {
@@ -31,10 +45,13 @@ export async function GET(
     const shifts = await prismadb.shift.findMany({
       where: {
         storeId: params.storeId,
+        employeeId: employeeId || undefined,
       },
     });
+ 
+    // return NextResponse.json(shifts);
 
-    return NextResponse.json(shifts);
+    return NextResponse.json(shifts, { headers: corsHeaders });
   } catch (error) {
     console.log("[SHIFTS_GET]", error);
     return new NextResponse("Internal error", { status: 500 });
@@ -102,7 +119,6 @@ export async function POST(
       });
     }
 
-   
     let shift; // Declare the 'shift' variable
 
     for (let i = 0; i < shiftDateAndTime.length; i++) {
@@ -118,14 +134,11 @@ export async function POST(
     }
 
     return NextResponse.json(shift);
-  }
-  catch (error) {
+  } catch (error) {
     console.log("[SHIFTS_POST]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
 }
-
-
 
 export async function DELETE(
   req: Request,
