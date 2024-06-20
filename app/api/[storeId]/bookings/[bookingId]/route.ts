@@ -3,33 +3,35 @@ import { auth } from "@clerk/nextjs";
 
 import prismadb from "@/lib/prismadb";
 
-// export async function GET(
-//   req: Request,
-//   { params }: { params: { bookingId: string } }
-// ) {
-//   try {
-//     if (!params.bookingId) {
-//       return new NextResponse("Booking id is required", { status: 400 });
-//     }
+export async function GET(
+  req: Request,
+  { params }: { params: { bookingId: string } }
+) {
+  try {
+    if (!params.bookingId) {
+      return new NextResponse("Booking id is required", { status: 400 });
+    }
+    const booking = await prismadb.booking.findUnique({
+      where: {
+        id: params.bookingId,
+      },
+      include: {
+        customer: true,
+        employee: true,
+        service: {
+          include: {
+            images: true,
+          },
+        },
+      },
+    });
 
-//     const booking = await prismadb.booking.findUnique({
-//       where: {
-//         id: params.bookingId,
-//       },
-//       // include: {
-//       //   images: true,
-//       //   category: true,
-//       //   size: true,
-//       //   color: true,
-//       // },
-//     });
-
-//     return NextResponse.json(booking);
-//   } catch (error) {
-//     console.log("[BOOKING_GET]", error);
-//     return new NextResponse("Internal error", { status: 500 });
-//   }
-// }
+    return NextResponse.json(booking);
+  } catch (error) {
+    console.log("[BOOKING_GET]", error);
+    return new NextResponse("Internal error", { status: 500 });
+  }
+}
 
 export async function DELETE(
   req: Request,

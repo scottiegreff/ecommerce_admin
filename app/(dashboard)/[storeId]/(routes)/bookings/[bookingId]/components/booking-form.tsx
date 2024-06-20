@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/command";
 import { Booking, Employee, Service, Shift, Customer, BookingStartAndEnd } from "@/types";
 import React from "react";
+import { it } from "node:test";
 
 interface BookingFormProps {
   services: Service[];
@@ -47,7 +48,7 @@ interface BookingFormProps {
 const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employees }, ) => {
   const params = useParams();
   const router = useRouter();
-  const [service, setService] = useState<Service>();
+  const [service, setService] = useState<Service[]>();
   const [serviceId, setServiceId] = useState("");
   // const [customers, setCustomers] = useState<Customer[]>(data);
   const [customerId, setCustomerId] = useState("");
@@ -64,7 +65,7 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
   const [value, setValue] = React.useState("");
   const [bookingStartDateAndTime, setBookingStartDateAndTime] =
   useState<String>();
-
+  
   const [loading, setLoading] = useState(false);
 
   const toastMessage = "Booking created.";
@@ -85,10 +86,11 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
     }
     const startOfBooking = new Date(bookingStartDateAndTime as string); // Convert bookingStartDateAndTime to a string before assigning it to start
     const endOfBooking = new Date(
-      startOfBooking.getTime() + (service?.duration ?? 0) * 60000
+      startOfBooking.getTime() + (serviceDuration ?? 0) * 60000
     );
     const data = {
       serviceId: serviceId,
+      service: service,
       startOfBooking: startOfBooking,
       endOfBooking: endOfBooking,
       employeeId: employeeId,
@@ -96,7 +98,7 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
       shiftId: shift?.id,
       email: customerEmail,
     };
-    // console.log("DATA: ", data);
+
     try {
       setLoading(true);
       const response = await fetch(
@@ -107,7 +109,6 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
         }
       );
       const responseData = await response.json(); // Access the response data
-      // console.log("RESPONSE DATA: ", responseData);
       router.refresh();
       toast.success(toastMessage);
     } catch (error: any) {
@@ -135,7 +136,6 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
     });
   }
   useEffect(() => {
-    console.log("UE: 1")
     // Fetch all shifts of employeeId from the API, and returns the shifts from today onwards, then setShifts.
     if (service && employeeId) {
       const shifts = async () => {
@@ -163,7 +163,6 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
   }, [service,customerId, employeeId]);
 
   useEffect(() => {
-    console.log("UE: 2")
     // this useEffect is used to gather data needed for the availableSlots function,
     //  ultimately used for selecting the time of the booking
     // get the shift the user selected, and setShift
@@ -204,14 +203,20 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
             }
           );
 
-          if (service?.duration == undefined) {
+          if (service == undefined) {
             return;
           }
+          // map through the service array and add all the durations together
+          let totalDuration = 0;
+          service.map((item) => {
+            totalDuration += item.duration;
+          });
+          setServiceDuration(totalDuration);
           const availableSlots = getAvailableTimeSlots(
             startShift,
             endShift,
             startAndEndOfBookings,
-            service?.duration
+            totalDuration
           );
           setBookingHours(availableSlots);
         } catch (error) {
@@ -296,11 +301,12 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
                   (service) => service.id === value
                 );
                 setServiceId(value);
-                setService(selectedService);
+                const serviceArr = selectedService ? [selectedService] : [];
+                setService(serviceArr);
               }}
             >
               <SelectTrigger className="text-muted-foreground font-normal">
-                <SelectValue placeholder="Select a staff" />
+                <SelectValue placeholder="Select a service" />
               </SelectTrigger>
 
               <SelectContent className="w-full bg-white">

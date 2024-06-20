@@ -64,9 +64,7 @@ export interface Service {
   isFeatured: boolean;
   duration: number;
   category: Category;
-  size: Size;
-  color: Color;
-  images: Image[]; 
+  images: Image[];  
 
 }
 

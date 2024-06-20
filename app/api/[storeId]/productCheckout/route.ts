@@ -11,7 +11,7 @@ const corsHeaders = {
 };
 
 export async function OPTIONS() {
-  console.log("CORS HEADERS", corsHeaders);
+  // console.log("CORS HEADERS", corsHeaders);
   return NextResponse.json({}, { headers: corsHeaders });
 }
 
@@ -32,9 +32,9 @@ export async function POST(
       },
     },
   });
+  console.log("CART API: ", products)
 
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
-  console.log("CART API: ", products, line_items)
   products.forEach((product) => {
     line_items.push({
       quantity: 1,
@@ -47,7 +47,7 @@ export async function POST(
       },
     });
   });
-
+  console.log("LINE ITEMS: ", line_items);
   const order = await prismadb.order.create({
     data: {
       storeId: params.storeId,

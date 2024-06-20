@@ -35,7 +35,6 @@ const BookingsPage = async ({ params }: { params: { storeId: string } }) => {
       startOfBooking: "desc",
     },
   });
- console.log("DATA", bookings)
   const formattedBookings: BookingColumn[] = bookings.map((item) => ({
     bookingId: item.id,
     startOfBooking: format(item.startOfBooking, "MMMM do, yyyy h:mm a"),

@@ -1,12 +1,11 @@
 "use client";
 
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 import useCart from "@/hooks/use-cart";
-import getService from "@/actions/get-service";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +18,7 @@ import {
 import { AlertModal } from "@/components/modals/alert-modal";
 
 import { BookingColumn } from "./columns";
+import { Service } from "@/types";
 
 interface CellActionProps {
   data: BookingColumn;
@@ -30,6 +30,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const cart = useCart();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [cartItem, setCartItem] = useState<Service>();
 
   const onConfirm = async () => {
     console.log("data", data.bookingId);
@@ -51,11 +52,30 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     toast.success("Booking ID copied to clipboard.");
   };
 
-  const onPayNow = (data: BookingColumn) => {
-    console.log("PAY NOW", data);
-    // cart.addItem(data);
-    // router.push(`/${params.storeId}/cart`)
-  }
+  const onPayNow = (id: string) => {
+    const fetchBooking = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(
+          `/api/${params.storeId}/bookings/${id}`
+        );
+        const booking = res.data;
+        booking.service.map((item: Service) => {
+          cart.addItem(item);
+        }
+        );
+        router.push(`/${params.storeId}/cart`);
+        router.refresh();
+      } catch (error) {
+      } finally {
+        setOpen(false);
+        setLoading(false);
+      }
+    };
+    fetchBooking();
+  };
+
+
 
   return (
     <>
@@ -75,9 +95,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem
-            onClick={() => onPayNow(data)}
-          >
+          <DropdownMenuItem onClick={() => onPayNow(data?.bookingId)}>
             <Edit className="mr-2 h-4 w-4" /> PAY NOW
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => onCopy(data?.bookingId)}>

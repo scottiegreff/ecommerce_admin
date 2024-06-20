@@ -19,6 +19,7 @@ req: Request,
 ) {
 try {
   const { searchParams } = new URL(req.url)
+  const id = searchParams.get('id') || undefined;
   const shiftId = searchParams.get('shiftId') || undefined;
   const employeeId = searchParams.get('employeeId') || undefined;
   if (!params.storeId) {
@@ -45,6 +46,7 @@ try {
   const bookings = await prismadb.booking.findMany({
     where: {
       storeId: params.storeId,
+      id: id,
       shiftId: shiftId,
       employeeId: employeeId,
     },
@@ -68,11 +70,14 @@ export async function POST(
     employeeId,
     shiftId,
     serviceId,
+    service,
     startOfBooking,
     endOfBooking,
     customerId,
     email,
   } = await req.json();
+  console.log("serviceId!!!!!!!!", serviceId);
+  console.log("service>>>>>>>>", service);
   try {
     if (!params.storeId) {
       return new NextResponse("Store id is required", { status: 400 });
@@ -121,8 +126,7 @@ export async function POST(
       where: {
         storeId: params.storeId,
         serviceId: serviceId,
-        employeeId: employeeId,
-        startOfBooking: startOfBooking,
+        shiftId: shiftId,
       },
     });
 
@@ -134,6 +138,7 @@ export async function POST(
       data: {
         storeId: params.storeId,
         serviceId: serviceId,
+        service: { connect: { id: serviceId } },
         employeeId: employeeId,
         startOfBooking: startOfBooking,
         endOfBooking: endOfBooking,

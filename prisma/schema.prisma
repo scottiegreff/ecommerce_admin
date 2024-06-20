@@ -23,23 +23,23 @@ model Billboard {
 // Booking > Service m-n, Service > Booking m-n
 // Shift > Booking m-n, Booking > Shift 1-1
 model Booking {
-  id              String    @id @default(uuid())
-  storeId         String
-  serviceId       String
-  startOfBooking  DateTime
-  endOfBooking    DateTime
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime?
+  id             String    @id @default(uuid())
+  storeId        String
+  serviceId      String
+  startOfBooking DateTime
+  endOfBooking   DateTime
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime?
   // orderItemId String
-  shiftId         String
-  employeeId      String
-  customerId      String
+  shiftId        String
+  employeeId     String
+  customerId     String
   // orderItems  OrderItem[]
-  store           Store      @relation("StoreToBooking", fields: [storeId], references: [id])
-  customer        Customer   @relation(fields: [customerId], references: [id])
-  employee        Employee   @relation(fields: [employeeId], references: [id])
-  service         Service[]
-  shift           Shift      @relation(fields: [shiftId], references: [id])
+  store          Store     @relation("StoreToBooking", fields: [storeId], references: [id])
+  customer       Customer  @relation(fields: [customerId], references: [id])
+  employee       Employee  @relation(fields: [employeeId], references: [id])
+  service        Service[]
+  shift          Shift     @relation(fields: [shiftId], references: [id])
 
   @@index([storeId])
 }
@@ -80,30 +80,32 @@ model Color {
 }
 
 model Customer {
-  id          String     @id @default(uuid())
-  storeId     String
-  custFName   String
-  custLName   String
-  email       String      @unique
-  phone       String
-  bookings    Booking[]
+  id        String    @id @default(uuid())
+  storeId   String
+  custFName String
+  custLName String
+  email     String    @unique
+  phone     String
+  bookings  Booking[]
+  orders    Order[]
+
   @@index([storeId])
 }
 
 model Employee {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   storeId   String
   fName     String
   lName     String
-  email     String   @unique
+  email     String    @unique
   phone     String
   color     String
-  createdAt DateTime @default(now())
-  isActive  Boolean  @default(true)
-  shifts    Shift[]  @relation("EmployeeToShift")
+  createdAt DateTime  @default(now())
+  isActive  Boolean   @default(true)
+  shifts    Shift[]   @relation("EmployeeToShift")
   services  Service[]
   bookings  Booking[]
-  store     Store    @relation("StoreToEmployee", fields: [storeId], references: [id])
+  store     Store     @relation("StoreToEmployee", fields: [storeId], references: [id])
 
   @@index([storeId])
 }
@@ -138,13 +140,13 @@ model Image {
 model Order {
   id         String      @id @default(uuid())
   storeId    String
-  // customerId String
+  customerId String?
   isPaid     Boolean     @default(false)
   phone      String      @default("")
   address    String      @default("")
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
-  // customer   Customer?   @relation(fields: [customerId], references: [id])
+  customer   Customer?   @relation(fields: [customerId], references: [id])
   store      Store       @relation("StoreToOrder", fields: [storeId], references: [id])
   orderItems OrderItem[]
 
@@ -152,20 +154,19 @@ model Order {
 }
 
 model OrderItem {
-  id         String     @id @default(uuid())
-  // customerId String
-  orderId    String
-  productId  String
-  // bookingId  String
-  order      Order      @relation(fields: [orderId], references: [id])
-  // customer   Customer?   @relation(fields: [customerId], references: [id])
-  product    Product?   @relation(fields: [productId], references: [id])
-  // booking    Booking?   @relation(fields: [bookingId], references: [id])
-  
-  @@index([orderId])
-  @@index([productId])
+  id        String   @id @default(uuid())
+  orderId   String
+  productId String?
+  serviceId String?
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Product? @relation(fields: [productId], references: [id])
+  service   Service? @relation(fields: [serviceId], references: [id])
   // @@index([bookingId])
   // @@index([customerId])
+
+  @@index([orderId])
+  @@index([productId])
+  @@index([serviceId])
 }
 
 model Product {
@@ -194,22 +195,23 @@ model Product {
 }
 
 model Service {
-  id          String     @id @default(uuid())
+  id          String      @id @default(uuid())
   storeId     String
   categoryId  String
   name        String
   description String?
   duration    Int
   price       Float
-  isFeatured  Boolean    @default(false)
-  isArchived  Boolean    @default(false)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  isFeatured  Boolean     @default(false)
+  isArchived  Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
   images      Image[]
   bookings    Booking[]
   employee    Employee[]
-  category    Category   @relation("CategoryToService", fields: [categoryId], references: [id])
-  store       Store      @relation("StoreToService", fields: [storeId], references: [id])
+  category    Category    @relation("CategoryToService", fields: [categoryId], references: [id])
+  store       Store       @relation("StoreToService", fields: [storeId], references: [id])
+  OrderItem   OrderItem[]
 
   @@index([storeId])
   @@index([categoryId])
@@ -264,4 +266,3 @@ model Store {
   sizes      Size[]      @relation("StoreToSize")
   services   Service[]   @relation("StoreToService")
 }
-

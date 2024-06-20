@@ -12,7 +12,6 @@ export const revalidate = 0;
 const CartPage = () => {
   const [isMounted, setIsMounted] = useState(false);
   const cart = useCart();
-  console.log('CART!', cart);
 
   useEffect(() => {
     setIsMounted(true);
