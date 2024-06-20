@@ -30,11 +30,9 @@ model Booking {
   endOfBooking   DateTime
   createdAt      DateTime  @default(now())
   updatedAt      DateTime?
-  // orderItemId String
   shiftId        String
   employeeId     String
   customerId     String
-  // orderItems  OrderItem[]
   store          Store     @relation("StoreToBooking", fields: [storeId], references: [id])
   customer       Customer  @relation(fields: [customerId], references: [id])
   employee       Employee  @relation(fields: [employeeId], references: [id])
