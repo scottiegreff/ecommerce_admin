@@ -12,6 +12,15 @@ const BookingPage = async ({
     where: {
       storeId: params.storeId,
     },
+    include: {
+      category: true,
+      images: true,
+    },
+  }).then((result) => {
+    return result.map((service) => ({
+      ...service,
+      price: service.price.toString(),
+    }));
   });
 
   const customers = await prismadb.customer.findMany({

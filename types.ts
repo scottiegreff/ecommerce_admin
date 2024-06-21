@@ -60,11 +60,10 @@ export interface Service {
   id: string;
   name: string;
   description: string | null;
-  price: number;
+  price: string;
   isFeatured: boolean;
   duration: number;
-  // category: Category;
-  // images: Image[];  
+  images: Image[];  
 }
 
 export interface Size {

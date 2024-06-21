@@ -25,7 +25,7 @@ const ServicesPage = async ({
     name: item.name,
     description: item.description || "", // Handle null description
     duration: item.duration,
-    price: formatter.format(item.price),
+    price: formatter.format(Number(item.price)), // Convert Decimal to number
     isFeatured: item.isFeatured,
     isArchived: item.isArchived,
     category: item.category.name,

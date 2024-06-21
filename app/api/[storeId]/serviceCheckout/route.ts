@@ -43,7 +43,7 @@ export async function POST(
         product_data: {
           name: service.name,
         },
-        unit_amount: service.price * 100,
+        unit_amount: Number(service.price) * 100,
       },
     });
   });

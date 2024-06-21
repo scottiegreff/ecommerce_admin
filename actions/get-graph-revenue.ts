@@ -17,6 +17,7 @@ export const getGraphRevenue = async (
       orderItems: {
         include: {
           product: true,
+          service: true,
         },
       },
     },
@@ -31,7 +32,10 @@ export const getGraphRevenue = async (
 
     for (const item of order.orderItems) {
       if (item.product) {
-        revenueForOrder += item.product.price.toNumber();
+        revenueForOrder += item?.product.price.toNumber();
+      }
+      if (item.service) {
+        revenueForOrder += item?.service.price.toNumber();;
       }
     }
 
