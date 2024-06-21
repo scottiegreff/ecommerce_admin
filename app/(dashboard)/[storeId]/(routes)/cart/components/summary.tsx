@@ -32,9 +32,20 @@ const Summary = () => {
   const param = useParams();
   const storeId = param.storeId;
 
+  const itemMap = new Map();
+
+  items.forEach((item) => {
+    if (itemMap.has(item.id)) {
+      itemMap.get(item.id).quantity++;
+    } else {
+      itemMap.set(item.id, { id: item.id, quantity: 1 });
+    }
+  });
+
+  const cartData = Array.from(itemMap.values());
   const onCheckout = async () => {
     const response = await axios.post(`/api/${storeId}/serviceCheckout`, {
-      serviceIds: items.map((item) => item.id),
+      cartData: cartData
     });
     window.location = response.data.url;
   };

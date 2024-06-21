@@ -332,7 +332,7 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
                   <CheckIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-full p-0">
+              <PopoverContent className="w-[50vw] -me-10 overflow-y-auto max-h-[20rem]">
                 <Command>
                   <CommandInput
                     placeholder="Search for customer"
@@ -452,7 +452,7 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
               <SelectTrigger>
                 <SelectValue placeholder="Pick an available time" />
               </SelectTrigger>
-              <SelectContent className="w-[20vw] bg-white mt-1 block pr-10 py-2 text-base border-gray-300 sm:text-sm rounded-md">
+              <SelectContent className="w-full -me-10 overflow-y-auto max-h-[20rem] bg-white mt-1 block pr-10 py-2 text-base border-gray-300 sm:text-sm rounded-md">
                 {bookingHours?.map((time) => (
                   <SelectItem
                     key={time.toString()}

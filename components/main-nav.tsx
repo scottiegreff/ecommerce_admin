@@ -90,7 +90,11 @@ export function MainNav({
       label: "Orders",
       active: pathname === `/${params.storeId}/orders`,
     },
-
+    {
+      href: `/${params.storeId}/cart`,
+      label: "Payments",
+      active: pathname === `/${params.storeId}/`,
+    },
     {
       href: `/${params.storeId}/settings`,
       label: "Settings",

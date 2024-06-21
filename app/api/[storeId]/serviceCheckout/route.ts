@@ -20,43 +20,53 @@ export async function POST(
   { params }: { params: { storeId: string } }
 ) {
   // console.log("FUCKING HERE")
-  const { serviceIds } = await req.json();
-  if (!serviceIds || serviceIds.length === 0) {
+  const { cartData } = await req.json();
+  if (!cartData || cartData.length === 0) {
     return new NextResponse("Product ids are required", { status: 400 });
   }
 
-  const services = await prismadb.service.findMany({
-    where: {
-      id: {
-        in: serviceIds,
-      },
-    },
-  });
-  console.log("CART API: ", services);
+  const orderData = await Promise.all(
+    cartData.map(async (item: any) => {
+      const service = await prismadb.service.findFirst({
+        where: {
+          id: item.id,
+        },
+      });
+      return {
+        service,
+        quantity: item.quantity,
+      };
+    })
+  );
+  // const services = await prismadb.service.findMany({
+  //   where: {
+  //     id: {
+  //       in: cartData.id,
+  //     },
+  //   },
+  // });
 
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
-  services.forEach((service) => {
+  orderData.forEach((item) => {
     line_items.push({
-      quantity: 1,
+      quantity: item.quantity,
       price_data: {
         currency: "CAD",
-        product_data: {
-          name: service.name,
-        },
-        unit_amount: Number(service.price) * 100,
+        product_data: { name: item.service.name },
+        unit_amount: item.service.price.toNumber() * 100,
       },
     });
   });
-  console.log("LINE ITEMS: ", line_items);
+
   const order = await prismadb.order.create({
     data: {
       storeId: params.storeId,
       isPaid: false,
       orderItems: {
-        create: serviceIds.map((serviceId: string) => ({
+        create: orderData.map((item: any) => ({
           service: {
             connect: {
-              id: serviceId,
+              id: item.service.id,
             },
           },
         })),
@@ -71,8 +81,8 @@ export async function POST(
     phone_number_collection: {
       enabled: true,
     },
-    success_url: `${process.env.ADMIN_URL}/api/${params.storeId}/serviceCart?success=1`,
-    cancel_url: `${process.env.ADMIN_URL}/api/${params.storeId}/serviceCart?canceled=1`,
+    success_url: `${process.env.ADMIN_URL}/${params.storeId}/cart?success=1`,
+    cancel_url: `${process.env.ADMIN_URL}/${params.storeId}/cart?canceled=1`,
     metadata: {
       orderId: order.id,
     },
