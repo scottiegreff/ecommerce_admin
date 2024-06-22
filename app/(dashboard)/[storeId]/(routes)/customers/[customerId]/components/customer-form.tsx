@@ -20,6 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Heading } from "@/components/ui/heading";
 import { AlertModal } from "@/components/modals/alert-modal";
@@ -44,6 +45,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({ initialData }) => {
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [confirmEmail, setConfirmEmail] = useState("");
 
   const title = initialData ? "Edit customer" : "Create customer";
   const description = initialData ? "Edit a customer." : "Add a new customer";
@@ -62,6 +64,10 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({ initialData }) => {
 
   const onSubmit = async (data: CustomerFormValues) => {
     console.log("DATA", data);
+    if (data.email !== confirmEmail) {
+      toast.error("Emails do not match.");
+      return;
+    }
     try {
       setLoading(true);
       if (initialData) {
@@ -123,6 +129,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({ initialData }) => {
         )}
       </div>
       <Separator />
+      {/* CUST FIRST NAME */}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -146,6 +153,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({ initialData }) => {
                 </FormItem>
               )}
             />
+            {/* CUST LAST NAME */}
             <FormField
               control={form.control}
               name="custLName"
@@ -163,6 +171,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({ initialData }) => {
                 </FormItem>
               )}
             />
+            {/* EMAIL */}
             <FormField
               control={form.control}
               name="email"
@@ -176,6 +185,19 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({ initialData }) => {
                 </FormItem>
               )}
             />
+            {/*  CONFIRM EMAIL */}
+            <div className="grid w-full max-w-sm items-center gap-1.5">
+              <Label htmlFor="email">Confirm Customer Email</Label>
+              <Input
+                type="email"
+                id="email"
+                placeholder="Confirm email"
+                value={confirmEmail}
+                onChange={(e) => setConfirmEmail(e.target.value)}
+              />
+            </div>
+
+            {/* PHONE NUMBER */}
             <FormField
               control={form.control}
               name="phone"
