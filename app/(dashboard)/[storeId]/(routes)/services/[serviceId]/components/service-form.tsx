@@ -230,9 +230,8 @@ export const ServiceForm: React.FC<ServiceFormProps> = ({
                   <FormControl>
                     <Input
                       type="number"
-                      step={30}
-                      min={30}
-                      max={180}
+                      min={1}
+                      max={500}
                       disabled={loading}
                       placeholder="30"
                       {...field}
