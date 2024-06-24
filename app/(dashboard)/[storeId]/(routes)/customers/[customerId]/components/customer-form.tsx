@@ -145,7 +145,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({ initialData }) => {
                   <FormControl>
                     <Input
                       disabled={loading}
-                      placeholder="First Name"
+                      placeholder="First name"
                       {...field}
                     />
                   </FormControl>
@@ -163,7 +163,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({ initialData }) => {
                   <FormControl>
                     <Input
                       disabled={loading}
-                      placeholder="Last Name"
+                      placeholder="Last name"
                       {...field}
                     />
                   </FormControl>

@@ -306,7 +306,7 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
                 <SelectValue placeholder="Select a service" />
               </SelectTrigger>
 
-              <SelectContent className="w-full bg-white">
+              <SelectContent className="w-full">
                 {services?.map((item) => (
                   <SelectItem key={item.id} value={item.id}>
                     {item.name}
@@ -379,7 +379,7 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
                 <SelectValue placeholder="Select a staff" />
               </SelectTrigger>
 
-              <SelectContent className="w-full bg-white">
+              <SelectContent className="w-full">
                 {employees?.map((item) => (
                   <SelectItem
                     key={item.id}
@@ -414,7 +414,7 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
                 </Button>
               </PopoverTrigger>
               <PopoverContent
-                className="w-auto p-0 bg-white h-[325px]"
+                className="w-auto p-0 h-[325px]"
                 align="start"
               >
                 <Calendar
@@ -452,7 +452,7 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
               <SelectTrigger>
                 <SelectValue placeholder="Pick an available time" />
               </SelectTrigger>
-              <SelectContent className="w-full -me-10 overflow-y-auto max-h-[20rem] bg-white mt-1 block pr-10 py-2 text-base border-gray-300 sm:text-sm rounded-md">
+              <SelectContent className="w-full -me-10 overflow-y-auto max-h-[20rem] mt-1 block pr-10 py-2 text-base border-gray-300 sm:text-sm rounded-md">
                 {bookingHours?.map((time) => (
                   <SelectItem
                     key={time.toString()}
