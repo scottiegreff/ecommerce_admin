@@ -30,6 +30,9 @@ const formSchema = z.object({
   name: z.string().min(2),
   openTime: z.number().int().min(0),
   closeTime: z.number().int().min(0),
+  address: z.string().min(2).optional(),
+  phone: z.string().min(2).optional(),
+  email: z.string().email().optional(),
 });
 
 type SettingsFormValues = z.infer<typeof formSchema>;
@@ -46,13 +49,25 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const defaultValues = {
+    name: initialData.name,
+    openTime: initialData.openTime,
+    closeTime: initialData.closeTime,
+    address: initialData.address ?? undefined,
+    phone: initialData.phone ?? undefined,
+  };
+
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues,
   });
 
   const onSubmit = async (data: SettingsFormValues) => {
-    if (data.openTime >= data.closeTime && data.openTime !== 0 && data.closeTime !== 0) {
+    if (
+      data.openTime >= data.closeTime &&
+      data.openTime !== 0 &&
+      data.closeTime !== 0
+    ) {
       toast.error("Closing time must be after opening time");
       return;
     }
@@ -61,7 +76,6 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
       await axios.patch(`/api/stores/${params.storeId}`, data);
       router.refresh();
       toast.success("Store updated.");
-      
     } catch (error: any) {
       toast.error("Something went wrong.");
     } finally {
@@ -142,7 +156,7 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
                       defaultValue={field.value}
                       onChange={(e) => field.onChange(parseInt(e.target.value))}
                       disabled={loading}
-                      placeholder="Opening Time"
+                      placeholder="Opening time"
                     />
                   </FormControl>
                   <FormMessage />
@@ -161,7 +175,58 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialData }) => {
                       defaultValue={field.value}
                       onChange={(e) => field.onChange(parseInt(e.target.value))}
                       disabled={loading}
-                      placeholder="Closing Time"
+                      placeholder="Closing time"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Address</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      placeholder="Store address"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      placeholder="Store phone"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+             <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      placeholder="Store email"
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />

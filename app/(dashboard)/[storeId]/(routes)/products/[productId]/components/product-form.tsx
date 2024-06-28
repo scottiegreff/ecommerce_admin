@@ -67,7 +67,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   const toastMessage = initialData ? 'Product updated.' : 'Product created.';
   const action = initialData ? 'Save changes' : 'Create';
 
-  console.log("I DATA",initialData);
+
   const defaultValues = initialData ? {
     ...initialData,
     price: parseFloat(String(initialData?.price)),

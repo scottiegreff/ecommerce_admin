@@ -12,7 +12,7 @@ export async function PATCH(
     const { userId } = auth();
     const body = await req.json();
 
-    const { name, openTime, closeTime } = body;
+    const { name, openTime, closeTime, address, phone, email } = body;
 
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 403 });
@@ -42,7 +42,10 @@ export async function PATCH(
       data: {
         name,
         openTime,
-        closeTime
+        closeTime,
+        address,
+        phone,
+        email,
       }
     });
   
