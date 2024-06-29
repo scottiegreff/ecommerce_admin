@@ -11,7 +11,7 @@ const corsHeaders = {
 };
 
 export async function OPTIONS() {
-  // console.log("CORS HEADERS", corsHeaders);
+  console.log("CORS HEADERS", corsHeaders);
   return NextResponse.json({}, { headers: corsHeaders });
 }
 
@@ -19,31 +19,57 @@ export async function POST(
   req: Request,
   { params }: { params: { storeId: string } }
 ) {
-  // console.log("FUCKING HERE")
-  const { productIds } = await req.json();
-  if (!productIds || productIds.length === 0) {
+  console.log("FUCKING HERE")
+  const { cartData } = await req.json();
+  console.log("PRODUCT IDS", cartData)
+  if (!cartData || cartData.length === 0) {
     return new NextResponse("Product ids are required", { status: 400 });
   }
+  const orderData = await Promise.all(
+    cartData.map(async (item: any) => {
+      const product = await prismadb.product.findFirst({
+        where: {
+          id: item.id,
+        },
+      });
+      return {
+        product,
+        quantity: item.quantity,
+      };
+    })
+  );
 
-  const products = await prismadb.product.findMany({
-    where: {
-      id: {
-        in: productIds,
-      },
-    },
-  });
-  console.log("CART API: ", products)
+  // const products = await prismadb.product.findMany({
+  //   where: {
+  //     id: {
+  //       in: productIds,
+  //     },
+  //   },
+  // });
+  // console.log("CART API: ", products)
 
+  // const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+  // products.forEach((product) => {
+  //   line_items.push({
+  //     quantity: 1,
+  //     price_data: {
+  //       currency: "CAD",
+  //       product_data: {
+  //         name: product.name,
+  //       },
+  //       unit_amount: product.price.toNumber() * 100,
+  //     },
+  //   });
+  // });
+  console.log("ORDER DATA: ", orderData);
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
-  products.forEach((product) => {
+  orderData.forEach((item) => {
     line_items.push({
-      quantity: 1,
+      quantity: item.quantity,
       price_data: {
         currency: "CAD",
-        product_data: {
-          name: product.name,
-        },
-        unit_amount: product.price.toNumber() * 100,
+        product_data: { name: item.product.name },
+        unit_amount: item.product.price.toNumber() * 100,
       },
     });
   });
@@ -53,10 +79,12 @@ export async function POST(
       storeId: params.storeId,
       isPaid: false,
       orderItems: {
-        create: productIds.map((productId: string) => ({
+        // create: productIds.map((productId: string) => ({
+          create: orderData.map((item: any) => ({
           product: {
             connect: {
-              id: productId,
+              // id: productId,
+              id: item.product.id,
             },
           },
         })),
