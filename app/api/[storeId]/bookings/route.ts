@@ -52,8 +52,6 @@ try {
     },
   });
 
-  console.log("BOOKING FROM API RESULT", bookings);
-
   return NextResponse.json(bookings, { headers: corsHeaders });
 } catch (error) {
   console.log("[SHIFTS_GET]", error);
@@ -67,17 +65,15 @@ export async function POST(
   { params }: { params: { storeId: string } }
 ) {
   const {
-    employeeId,
-    shiftId,
     serviceId,
-    service,
     startOfBooking,
     endOfBooking,
+    employeeId,
     customerId,
+    shiftId,
     email,
   } = await req.json();
-  console.log("serviceId!!!!!!!!", serviceId);
-  console.log("service>>>>>>>>", service);
+ 
   try {
     if (!params.storeId) {
       return new NextResponse("Store id is required", { status: 400 });
@@ -163,6 +159,7 @@ export async function POST(
     const startDate = parseISO(startOfBooking);
     const startFormatted = format(startDate, "MMMM do, yyyy, h:mm a");
     // const endFormatted = format(new Date(endOfBooking), "h:mm a");
+  
     const from: string = `${process.env.MAIL_USERNAME}`;
     const to: string = email || "";
     const subject: string =  "Prisoner Of Love Studio - Appointment Confirmation";
@@ -179,10 +176,7 @@ export async function POST(
     </div>
 </body>`;
 
-    console.log("START: ",startFormatted.slice," -  FROM: ", from, " -  TO: ", to , mailTemplate)
     sendMail(from, to, subject, mailTemplate);
-
-    // console.log("BOOKING FROM API RESULT", bookings);
 
     return NextResponse.json(bookings, { headers: corsHeaders });
   } catch (error) {
