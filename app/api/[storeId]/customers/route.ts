@@ -3,7 +3,7 @@ import { sendMail } from "@/lib/emails/mailService";
 import prismadb from "@/lib/prismadb";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": `${process.env.FRONTEND_STORE_URL}`,
+  "Access-Control-Allow-Origin": `${process.env.FRONTEND_STORE_URL}/service/8e86127b-420d-42d0-8497-030fd9073193`,
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
 };
