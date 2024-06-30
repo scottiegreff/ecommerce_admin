@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { sendMail } from "@/lib/emails/mailService";
 import prismadb from "@/lib/prismadb";
-
+// ${process.env.FRONTEND_STORE_URL}/service/8e86127b-420d-42d0-8497-030fd9073193
 const corsHeaders = {
-  "Access-Control-Allow-Origin": `${process.env.FRONTEND_STORE_URL}/service/8e86127b-420d-42d0-8497-030fd9073193`,
+  "Access-Control-Allow-Origin": `https://www.prisoneroflovestudio.com `,
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
 };
