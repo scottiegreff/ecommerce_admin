@@ -17,6 +17,7 @@ export async function POST(
   req: Request,
   { params }: { params: { storeId: string } }
 ) {
+  console.log("Request", req);
   try {
     // const { userId } = auth();
 
@@ -47,7 +48,7 @@ export async function POST(
     if (!params.storeId) {
       return new NextResponse("Store id is required", { status: 400 });
     }
-
+    console.log("Store ID", params.storeId);
     const storeByStoreId = await prismadb.store.findFirst({
       where: {
         id: params.storeId,
@@ -58,7 +59,7 @@ export async function POST(
     if (!storeByStoreId) {
       return new NextResponse("Unauthorized", { status: 405 });
     }
-
+    
     // check to see if customer already exists
     const existingCustomer = await prismadb.customer.findFirst({
       where: {
@@ -66,11 +67,11 @@ export async function POST(
         email,
       },
     });
-
+    console.log("Existing customer", existingCustomer);
     if (existingCustomer) {
       return NextResponse.json(existingCustomer, { headers: corsHeaders });
     }
-
+    console.log("Creating new customer");
     const customer = await prismadb.customer.create({
       data: {
         storeId: params.storeId,
@@ -97,7 +98,7 @@ export async function POST(
 </body>`;
 
     sendMail(from, to, subject, mailTemplate);
-
+    console.log("Customer created", customer);
     return NextResponse.json(customer, { headers: corsHeaders });
   } catch (error) {
     console.log("[CUSTOMERS_POST]", error);
