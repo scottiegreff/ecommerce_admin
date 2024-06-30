@@ -21,7 +21,6 @@ export async function GET(
   try {
     const { searchParams } = new URL(req.url);
     const employeeId = searchParams.get("employeeId") || undefined;
-    console.log("HERE", employeeId);
     // const { userId } = auth();
 
     // if (!userId) {

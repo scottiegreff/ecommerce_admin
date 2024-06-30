@@ -64,6 +64,7 @@ export async function POST(
   req: Request,
   { params }: { params: { storeId: string } }
 ) {
+
   const {
     serviceId,
     startOfBooking,
@@ -93,24 +94,24 @@ export async function POST(
       return new NextResponse("Service Id is required", { status: 400 });
     }
 
-    if (!employeeId) {
-      return new NextResponse("Employee Id is required", { status: 400 });
-    }
-
+    
     if (!startOfBooking) {
       return new NextResponse("Start of Booking is required", { status: 400 });
     }
-
+    
     if (!endOfBooking) {
       return new NextResponse("End of Booking is required", { status: 400 });
     }
+    if (!employeeId) {
+      return new NextResponse("Employee Id is required", { status: 400 });
+    }
+    
+        if (!customerId) {
+          return new NextResponse("Customer Id is required", { status: 400 });
+        }
 
     if (!shiftId) {
       return new NextResponse("Shift Id is required", { status: 400 });
-    }
-
-    if (!customerId) {
-      return new NextResponse("Customer Id is required", { status: 400 });
     }
 
     if (!email) {
@@ -122,13 +123,14 @@ export async function POST(
       where: {
         storeId: params.storeId,
         serviceId: serviceId,
-        shiftId: shiftId,
+        startOfBooking: startOfBooking,
       },
     });
 
     if (alreadyBooked){
       return new NextResponse("Appointment Exist", { status: 400 });
     }
+
 
     const bookings = await prismadb.booking.create({
       data: {
