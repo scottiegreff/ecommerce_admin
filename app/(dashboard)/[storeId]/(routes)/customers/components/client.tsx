@@ -30,6 +30,9 @@ export const CustomerClient: React.FC<CustomerClientProps> = ({
         </Button>
       </div>
       <Separator />
+      <p className="text-slate-500">
+        Search customer by last name.
+      </p>
       <DataTable searchKey="custLName" columns={columns} data={data} />
       <Heading title="API" description="API Calls for Customers" />
       <Separator />

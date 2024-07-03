@@ -45,7 +45,7 @@ export const BookingClient: React.FC<BookingClientProps> = ({ data }) => {
       </div>
       <Separator />
       <p className="text-slate-500">
-        Search booking of employee by their last name.
+        Search booking by date.
       </p>
       <DataTable searchKey="startOfBooking" columns={columns} data={data} />
     </>
