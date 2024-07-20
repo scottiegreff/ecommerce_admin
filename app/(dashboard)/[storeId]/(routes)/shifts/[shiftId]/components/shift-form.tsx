@@ -116,7 +116,7 @@ export const ShiftForm: React.FC<ShiftFormProps> = ({ employees }) => {
       setLoading(true);
       await axios.post(`/api/${params.storeId}/shifts/`, data);
       router.refresh();
-      // router.push(`/${params.storeId}/shifts`);
+      router.push(`/${params.storeId}/shifts`);
       toast.success(toastMessage);
     } catch (error: any) {
       toast.error("Something went wrong.");

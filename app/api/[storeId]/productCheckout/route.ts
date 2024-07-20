@@ -19,9 +19,9 @@ export async function POST(
   req: Request,
   { params }: { params: { storeId: string } }
 ) {
-  console.log("FUCKING HERE")
+  console.log("FUCKING HERE");
   const { cartData } = await req.json();
-  console.log("PRODUCT IDS", cartData)
+  console.log("PRODUCT IDS", cartData);
   if (!cartData || cartData.length === 0) {
     return new NextResponse("Product ids are required", { status: 400 });
   }
@@ -77,10 +77,11 @@ export async function POST(
   const order = await prismadb.order.create({
     data: {
       storeId: params.storeId,
+      
       isPaid: false,
       orderItems: {
         // create: productIds.map((productId: string) => ({
-          create: orderData.map((item: any) => ({
+        create: orderData.map((item: any) => ({
           product: {
             connect: {
               // id: productId,
@@ -91,7 +92,7 @@ export async function POST(
       },
     },
   });
-
+  console.log("ORDER: ", order);
   const session = await stripe.checkout.sessions.create({
     line_items,
     mode: "payment",
@@ -105,6 +106,7 @@ export async function POST(
       orderId: order.id,
     },
   });
+  console.log("SESSION: ", session);
   return NextResponse.json(
     { url: session.url },
     {

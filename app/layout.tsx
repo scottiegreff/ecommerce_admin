@@ -1,5 +1,8 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
+// import Head from "next/head";
+// import Link from "next/link";
+
 
 import { ModalProvider } from "@/providers/modal-provider";
 import { ToastProvider } from "@/providers/toast-provider";
@@ -24,6 +27,7 @@ export default async function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={inter.className}>
+         
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <ToastProvider />
             <ModalProvider />
