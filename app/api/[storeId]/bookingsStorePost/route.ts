@@ -9,7 +9,7 @@ export async function OPTIONS( req: Request) {
   return NextResponse.json({}, { headers: getCorsHeaders(req.headers.get("Origin"))});
 }
 // Define allowed origins
-const allowedOrigins = ["http://localhost:3001", "https://www.prisoneroflovestudio.com"];
+const allowedOrigins = process.env.FRONTEND_STORE_URL
 
 // CORS handling function
 function getCorsHeaders(origin: string | null) {
@@ -22,7 +22,7 @@ function getCorsHeaders(origin: string | null) {
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
   };
 
-  if (origin && allowedOrigins.includes(origin)) {
+  if (origin && allowedOrigins?.includes(origin)) {
     headers["Access-Control-Allow-Origin"] = origin;
   } else {
     headers["Access-Control-Allow-Origin"] = "null";
