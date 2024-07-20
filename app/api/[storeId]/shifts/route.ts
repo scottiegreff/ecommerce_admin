@@ -10,7 +10,6 @@ import prismadb from "@/lib/prismadb";
 // };
 
 export async function OPTIONS( req: Request) {
-  // console.log("CORS HEADERS", corsHeaders);
   return NextResponse.json({}, { headers: getCorsHeaders(req.headers.get("Origin"))});
 }
 // Define allowed origins

@@ -2,17 +2,31 @@ import { NextResponse } from "next/server";
 import { sendMail } from "@/lib/emails/mailService";
 import prismadb from "@/lib/prismadb";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": `${process.env.FRONTEND_STORE_URL}`,
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-};
 
-export async function OPTIONS() {
-  console.log("CORS HEADERS", corsHeaders);
-  return NextResponse.json({}, { headers: corsHeaders });
+export async function OPTIONS( req: Request) {
+  return NextResponse.json({}, { headers: getCorsHeaders(req.headers.get("Origin"))});
 }
+// Define allowed origins
+const allowedOrigins = ["http://localhost:3001", "https://www.prisoneroflovestudio.com"];
 
+// CORS handling function
+function getCorsHeaders(origin: string | null) {
+  const headers: {
+    "Access-Control-Allow-Methods": string;
+    "Access-Control-Allow-Headers": string;
+    "Access-Control-Allow-Origin"?: string;
+  } = {
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  };
+
+  if (origin && allowedOrigins.includes(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  } else {
+    headers["Access-Control-Allow-Origin"] = "null";
+  }
+  return headers;
+}
 export async function POST(
   req: Request,
   { params }: { params: { storeId: string } }
@@ -68,7 +82,7 @@ export async function POST(
     });
 
     if (existingCustomer) {
-      return NextResponse.json(existingCustomer, { headers: corsHeaders });
+      return NextResponse.json(existingCustomer, { headers: getCorsHeaders(req.headers.get("Origin"))});
     }
  
     const customer = await prismadb.customer.create({
@@ -98,7 +112,7 @@ export async function POST(
 
     sendMail(from, to, subject, mailTemplate);
   
-    return NextResponse.json(customer, { headers: corsHeaders });
+    return NextResponse.json(customer, { headers: getCorsHeaders(req.headers.get("Origin"))});
   } catch (error) {
     console.log("[CUSTOMERS_POST]", error);
     return new NextResponse("Internal error", { status: 500 });

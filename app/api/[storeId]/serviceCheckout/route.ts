@@ -4,15 +4,29 @@ import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import prismadb from "@/lib/prismadb";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": `${process.env.FRONTEND_STORE_URL}`,
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
+export async function OPTIONS( req: Request) {
+  return NextResponse.json({}, { headers: getCorsHeaders(req.headers.get("Origin"))});
+}
+// Define allowed origins
+const allowedOrigins = ["http://localhost:3001", "https://www.prisoneroflovestudio.com"];
 
-export async function OPTIONS() {
-  console.log("CORS HEADERS", corsHeaders);
-  return NextResponse.json({}, { headers: corsHeaders });
+// CORS handling function
+function getCorsHeaders(origin: string | null) {
+  const headers: {
+    "Access-Control-Allow-Methods": string;
+    "Access-Control-Allow-Headers": string;
+    "Access-Control-Allow-Origin"?: string;
+  } = {
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  };
+
+  if (origin && allowedOrigins.includes(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  } else {
+    headers["Access-Control-Allow-Origin"] = "null";
+  }
+  return headers;
 }
 
 export async function POST(
@@ -73,7 +87,7 @@ export async function POST(
       },
     },
   });
-
+  const origin = req.headers.get("Origin"); 
   const session = await stripe.checkout.sessions.create({
     line_items,
     mode: "payment",
@@ -81,8 +95,8 @@ export async function POST(
     phone_number_collection: {
       enabled: true,
     },
-    success_url: `${process.env.ADMIN_URL}/${params.storeId}/cart?success=1`,
-    cancel_url: `${process.env.ADMIN_URL}/${params.storeId}/cart?canceled=1`,
+    success_url: `${origin}/${params.storeId}/cart?success=1`,
+    cancel_url: `${origin}/${params.storeId}/cart?canceled=1`,
     metadata: {
       orderId: order.id,
     },
@@ -90,7 +104,7 @@ export async function POST(
   return NextResponse.json(
     { url: session.url },
     {
-      headers: corsHeaders,
+      headers: getCorsHeaders(req.headers.get("Origin")),
     }
   );
 }

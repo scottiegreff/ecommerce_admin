@@ -2,14 +2,30 @@ import { NextResponse } from "next/server";
 import prismadb from "@/lib/prismadb";
 import { sub, add } from "date-fns";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": `${process.env.FRONTEND_STORE_URL}`,
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
 
-export async function OPTIONS() {
-  return NextResponse.json({}, { headers: corsHeaders });
+export async function OPTIONS( req: Request) {
+  return NextResponse.json({}, { headers: getCorsHeaders(req.headers.get("Origin"))});
+}
+// Define allowed origins
+const allowedOrigins = ["http://localhost:3001", "https://www.prisoneroflovestudio.com"];
+
+// CORS handling function
+function getCorsHeaders(origin: string | null) {
+  const headers: {
+    "Access-Control-Allow-Methods": string;
+    "Access-Control-Allow-Headers": string;
+    "Access-Control-Allow-Origin"?: string;
+  } = {
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  };
+
+  if (origin && allowedOrigins.includes(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  } else {
+    headers["Access-Control-Allow-Origin"] = "null";
+  }
+  return headers;
 }
 
 export async function POST(
@@ -52,7 +68,7 @@ export async function POST(
       },
     });
 
-    return NextResponse.json(shifts, { headers: corsHeaders });
+    return NextResponse.json(shifts, { headers: getCorsHeaders(req.headers.get("Origin"))});
   } catch (error) {
     console.log("[SHIFTS_GET]", error);
     return new NextResponse("Internal error", { status: 500 });

@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
 import prismadb from "@/lib/prismadb";
 
-// const corsHeaders = {
-//   "Access-Control-Allow-Origin": `${process.env.FRONTEND_STORE_URL}`,
-//   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-//   "Access-Control-Allow-Headers": "Content-Type, Authorization",
-// };
+
 // Define allowed origins
 const allowedOrigins = ["http://localhost:3001", "https://www.prisoneroflovestudio.com"];
 
