@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 // import Head from "next/head";
 // import Link from "next/link";
 
-
 import { ModalProvider } from "@/providers/modal-provider";
 import { ToastProvider } from "@/providers/toast-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
@@ -26,8 +25,8 @@ export default async function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
+        <link rel="icon" href="/favicon.ico" sizes="any" />
         <body className={inter.className}>
-         
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <ToastProvider />
             <ModalProvider />

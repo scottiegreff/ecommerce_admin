@@ -3,61 +3,87 @@ import prismadb from "@/lib/prismadb";
 import { sendMail } from "@/lib/emails/mailService";
 import { format, parseISO } from "date-fns";
 
+export async function OPTIONS(req: Request) {
+  return NextResponse.json(
+    {},
+    { headers: getCorsHeaders(req.headers.get("Origin")) }
+  );
+}
+// Define allowed origins
+const allowedOrigins = [
+  "http://localhost:3001",
+  "https://www.prisoneroflovestudio.com",
+];
 
+// CORS handling function
+function getCorsHeaders(origin: string | null) {
+  const headers: {
+    "Access-Control-Allow-Methods": string;
+    "Access-Control-Allow-Headers": string;
+    "Access-Control-Allow-Origin"?: string;
+  } = {
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  };
 
+  if (origin && allowedOrigins.includes(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  } else {
+    headers["Access-Control-Allow-Origin"] = "null";
+  }
+  return headers;
+}
 
 export async function GET(
-req: Request,
-{ params }: { params: { storeId: string } }
+  req: Request,
+  { params }: { params: { storeId: string } }
 ) {
-try {
-  const { searchParams } = new URL(req.url)
-  const id = searchParams.get('id') || undefined;
-  const shiftId = searchParams.get('shiftId') || undefined;
-  const employeeId = searchParams.get('employeeId') || undefined;
-  if (!params.storeId) {
-    return new NextResponse("Store id is required", { status: 400 });
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id") || undefined;
+    const shiftId = searchParams.get("shiftId") || undefined;
+    const employeeId = searchParams.get("employeeId") || undefined;
+    if (!params.storeId) {
+      return new NextResponse("Store id is required", { status: 400 });
+    }
+
+    const storeByUserId = await prismadb.store.findFirst({
+      where: {
+        id: params.storeId,
+      },
+    });
+
+    if (!storeByUserId) {
+      return new NextResponse("Unauthorized", { status: 405 });
+    }
+
+    if (!shiftId) {
+      return new NextResponse("Shift Id is required", { status: 400 });
+    }
+
+    if (!employeeId) {
+      return new NextResponse("Employee Id is required", { status: 400 });
+    }
+    const bookings = await prismadb.booking.findMany({
+      where: {
+        storeId: params.storeId,
+        id: id,
+        shiftId: shiftId,
+        employeeId: employeeId,
+      },
+    });
+
+    return NextResponse.json(bookings,  { headers: getCorsHeaders(req.headers.get("Origin"))});
+  } catch (error) {
+    console.log("[SHIFTS_GET]", error);
+    return new NextResponse("Internal error", { status: 500 });
   }
-
-  const storeByUserId = await prismadb.store.findFirst({
-    where: {
-      id: params.storeId,
-    },
-  });
-
-  if (!storeByUserId) {
-    return new NextResponse("Unauthorized", { status: 405 });
-  }
-
-  if (!shiftId) {
-    return new NextResponse("Shift Id is required", { status: 400 });
-  }
-
-  if (!employeeId) {
-    return new NextResponse("Employee Id is required", { status: 400 });
-  }
-  const bookings = await prismadb.booking.findMany({
-    where: {
-      storeId: params.storeId,
-      id: id,
-      shiftId: shiftId,
-      employeeId: employeeId,
-    },
-  });
-
-  return NextResponse.json(bookings, { headers: corsHeaders });
-} catch (error) {
-  console.log("[SHIFTS_GET]", error);
-  return new NextResponse("Internal error", { status: 500 });
 }
-}
-
 
 export async function POST(
   req: Request,
   { params }: { params: { storeId: string } }
 ) {
-
   const {
     serviceId,
     startOfBooking,
@@ -67,7 +93,7 @@ export async function POST(
     shiftId,
     email,
   } = await req.json();
- 
+
   try {
     if (!params.storeId) {
       return new NextResponse("Store id is required", { status: 400 });
@@ -87,21 +113,20 @@ export async function POST(
       return new NextResponse("Service Id is required", { status: 400 });
     }
 
-    
     if (!startOfBooking) {
       return new NextResponse("Start of Booking is required", { status: 400 });
     }
-    
+
     if (!endOfBooking) {
       return new NextResponse("End of Booking is required", { status: 400 });
     }
     if (!employeeId) {
       return new NextResponse("Employee Id is required", { status: 400 });
     }
-    
-        if (!customerId) {
-          return new NextResponse("Customer Id is required", { status: 400 });
-        }
+
+    if (!customerId) {
+      return new NextResponse("Customer Id is required", { status: 400 });
+    }
 
     if (!shiftId) {
       return new NextResponse("Shift Id is required", { status: 400 });
@@ -120,10 +145,9 @@ export async function POST(
       },
     });
 
-    if (alreadyBooked){
+    if (alreadyBooked) {
       return new NextResponse("Appointment Exist", { status: 400 });
     }
-
 
     const bookings = await prismadb.booking.create({
       data: {
@@ -154,10 +178,11 @@ export async function POST(
     const startDate = parseISO(startOfBooking);
     const startFormatted = format(startDate, "MMMM do, yyyy, h:mm a");
     // const endFormatted = format(new Date(endOfBooking), "h:mm a");
-  
+
     const from: string = `${process.env.MAIL_USERNAME}`;
     const to: string = email || "";
-    const subject: string =  "Prisoner Of Love Studio - Appointment Confirmation";
+    const subject: string =
+      "Prisoner Of Love Studio - Appointment Confirmation";
     const mailTemplate: string = `<body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #000000; border-radius: 20px  ">
     <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #333 border-radius: 20px;">
         <h1 style="text-align: center;font-weight: 200; color: #FFFFFF;">Prisoner Of Love Studio</h1>
@@ -173,7 +198,9 @@ export async function POST(
 
     sendMail(from, to, subject, mailTemplate);
 
-    return NextResponse.json(bookings, { headers: corsHeaders });
+    return NextResponse.json(bookings, {
+      headers: getCorsHeaders(req.headers.get("Origin")),
+    });
   } catch (error) {
     console.log("[SHIFTS_GET]", error);
     return new NextResponse("Internal error", { status: 500 });
