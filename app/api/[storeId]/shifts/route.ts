@@ -9,10 +9,10 @@ import prismadb from "@/lib/prismadb";
 //   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 // };
 
-// export async function OPTIONS() {
-//   console.log("CORS HEADERS", corsHeaders);
-//   return NextResponse.json({}, { headers: corsHeaders });
-// }
+export async function OPTIONS( req: Request) {
+  // console.log("CORS HEADERS", corsHeaders);
+  return NextResponse.json({}, { headers: getCorsHeaders(req.headers.get("Origin"))});
+}
 // Define allowed origins
 const allowedOrigins = ["http://localhost:3001", "https://www.prisoneroflovestudio.com"];
 
@@ -32,7 +32,6 @@ function getCorsHeaders(origin: string | null) {
   } else {
     headers["Access-Control-Allow-Origin"] = "null";
   }
-  console.log("HEADERS!!!!!!!!!!!!!?????????????????????", headers);
   return headers;
 }
 
