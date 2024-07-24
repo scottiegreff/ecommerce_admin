@@ -11,6 +11,7 @@ import { getProductCount } from "@/actions/get-product-count";
 import { getServiceCount } from "@/actions/get-service-count";
 import { formatter } from "@/lib/utils";
 
+
 interface DashboardPageProps {
   params: {
     storeId: string;
@@ -26,6 +27,8 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
   const productCount = await getProductCount(params.storeId);
   const serviceCount = await getServiceCount(params.storeId);
 
+
+  
   return (
     <div className="flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">

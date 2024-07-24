@@ -33,12 +33,11 @@ export async function POST(
   req: Request,
   { params }: { params: { storeId: string } }
 ) {
-  // console.log("FUCKING HERE")
   const { cartData } = await req.json();
   if (!cartData || cartData.length === 0) {
     return new NextResponse("Product ids are required", { status: 400 });
   }
-
+  console.log("CART DATA!!!!!!!", cartData)
   const orderData = await Promise.all(
     cartData.map(async (item: any) => {
       const service = await prismadb.service.findFirst({

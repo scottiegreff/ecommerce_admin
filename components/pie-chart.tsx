@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { TrendingUp } from "lucide-react"
-import { Label, Pie, PieChart } from "recharts"
+import * as React from "react";
+import { TrendingUp } from "lucide-react";
+import { Label, Pie, PieChart } from "recharts";
 
 import {
   Card,
@@ -11,57 +11,55 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 287, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 190, fill: "var(--color-other)" },
-]
+} from "@/components/ui/chart";
+
+
+
+// const chartData = [
+//   { name: "test", revenue: 275, fill: "var(--color-chrome)" },
+//   { name: "safari", revenue: 200, fill: "var(--color-safari)" },
+//   { name: "firefox", revenue: 287, fill: "var(--color-firefox)" },
+//   { name: "edge", revenue: 173, fill: "var(--color-edge)" },
+//   { name: "other", revenue: 190, fill: "var(--color-other)" },
+// ];
 
 const chartConfig = {
   visitors: {
-    label: "Visitors",
+    label: "% of Product Revenue",
   },
-  chrome: {
-    label: "Chrome",
-    color: "#60a5fa",
-  },
-  safari: {
-    label: "Safari",
-    color: "hsl(var(--chart-2))",
-  },
-  firefox: {
-    label: "Firefox",
-    color: "hsl(var(--chart-3))",
-  },
-  edge: {
-    label: "Edge",
-    color: "hsl(var(--chart-4))",
-  },
-  other: {
-    label: "Other",
-    color: "#2563eb",
-  },
-} satisfies ChartConfig
+ 
+} satisfies ChartConfig;
 
-export default function PieChartCom () {
-  const totalVisitors = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0)
-  }, [])
+type ChartData = {
+  name: string,
+  revenue: number,
+  fill: string
+}[]
+
+interface PieChartComProps {
+  chartData: ChartData,
+  timePeriod: Date,
+}
+
+export default function PieChartCom({ chartData, timePeriod }: PieChartComProps) {
+  const totalRevenue = React.useMemo(() => {
+    return chartData.reduce((acc, curr) => acc + Number(curr.revenue), 0);
+  }, []);
+  
 
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Pie Chart - Donut with Text</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Revenue since</CardTitle>
+        <CardDescription>
+        {timePeriod.toDateString()}
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -72,18 +70,20 @@ export default function PieChartCom () {
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
-            />
+              />
             <Pie
               data={chartData}
-              dataKey="visitors"
-              nameKey="browser"
+              dataKey="revenue"
+              nameKey="name"
               innerRadius={60}
               strokeWidth={5}
-            >
+              >
+         
               <Label
                 content={({ viewBox }) => {
                   if (viewBox && "cx" in viewBox && "cy" in viewBox) {
                     return (
+                    
                       <text
                         x={viewBox.cx}
                         y={viewBox.cy}
@@ -95,32 +95,33 @@ export default function PieChartCom () {
                           y={viewBox.cy}
                           className="fill-foreground text-3xl font-bold"
                         >
-                          {totalVisitors.toLocaleString()}
+                          ${totalRevenue.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Visitors
+                          Total Revenue
                         </tspan>
                       </text>
-                    )
+                    );
                   }
                 }}
               />
+              
             </Pie>
           </PieChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          {/* Trending up by 5.2% this month <TrendingUp className="h-4 w-4" /> */}
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
+        Showing total product sales since <p className="text-center mt-2">{timePeriod.toDateString()}</p>
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }
