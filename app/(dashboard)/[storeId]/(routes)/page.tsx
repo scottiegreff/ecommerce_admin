@@ -11,24 +11,19 @@ import { getProductCount } from "@/actions/get-product-count";
 import { getServiceCount } from "@/actions/get-service-count";
 import { formatter } from "@/lib/utils";
 
-
 interface DashboardPageProps {
   params: {
     storeId: string;
   };
-};
+}
 
-const DashboardPage: React.FC<DashboardPageProps> = async ({ 
-  params
-}) => {
+const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
   const totalRevenue = await getTotalRevenue(params.storeId);
   const graphRevenue = await getGraphRevenue(params.storeId);
   const salesCount = await getSalesCount(params.storeId);
   const productCount = await getProductCount(params.storeId);
   const serviceCount = await getServiceCount(params.storeId);
 
-
-  
   return (
     <div className="flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
@@ -43,7 +38,9 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatter.format(totalRevenue)}</div>
+              <div className="text-2xl font-bold">
+                {formatter.format(totalRevenue)}
+              </div>
             </CardContent>
           </Card>
           <Card>

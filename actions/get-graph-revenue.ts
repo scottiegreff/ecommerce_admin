@@ -8,10 +8,16 @@ interface GraphData {
 export const getGraphRevenue = async (
   storeId: string
 ): Promise<GraphData[]> => {
+  const currentYear = new Date().getFullYear();
+  const januaryFirst = new Date(currentYear, 0, 1);
+
   const paidOrders = await prismadb.order.findMany({
     where: {
       storeId,
       isPaid: true,
+      createdAt: {
+        gte: januaryFirst,
+      },
     },
     include: {
       orderItems: {
@@ -22,6 +28,7 @@ export const getGraphRevenue = async (
       },
     },
   });
+
 
   const monthlyRevenue: { [key: number]: number } = {};
 
@@ -35,7 +42,7 @@ export const getGraphRevenue = async (
         revenueForOrder += item?.product.price.toNumber();
       }
       if (item.service) {
-        revenueForOrder += item?.service.price.toNumber();;
+        revenueForOrder += item?.service.price.toNumber();
       }
     }
 

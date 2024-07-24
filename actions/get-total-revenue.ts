@@ -1,10 +1,17 @@
 import prismadb from "@/lib/prismadb";
 
 export const getTotalRevenue = async (storeId: string) => {
+  
+  const currentYear = new Date().getFullYear();
+  const januaryFirst = new Date(currentYear, 0, 1);
+
   const paidOrders = await prismadb.order.findMany({
     where: {
       storeId,
       isPaid: true,
+      createdAt: {
+        gte: januaryFirst,
+      },
     },
     include: {
       orderItems: {
