@@ -21,7 +21,6 @@ export const getServicesRevenueByStore = async (
     where: {
       order: {
         storeId: storeId,
-
         isPaid: true,
         createdAt: {
           gte: timePeriod,
@@ -55,7 +54,7 @@ export const getServicesRevenueByStore = async (
     }
   }
 
-  const aggregateServices = (services: any) => {
+  const aggregateServices = () => {
     for (let i = 0; i < services.length; i++) {
       for (let j = i + 1; j < services.length; j++) {
         if (services[i].name === services[j].name) {
@@ -67,7 +66,7 @@ export const getServicesRevenueByStore = async (
     }
   };
 
-  aggregateServices(services);
+  aggregateServices();
 
   const chartData = services.map((item, index) => {
     return {

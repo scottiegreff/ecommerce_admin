@@ -1,16 +1,6 @@
 "use client";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
-} from "@/components/ui/chart";
-import React from "react";
 import { TrendingUp } from "lucide-react";
-
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -19,28 +9,43 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  product: {
+    label: "Products",
     color: "#2563eb",
   },
-  mobile: {
-    label: "Mobile",
+  service: {
+    label: "Services",
     color: "#60a5fa",
   },
 } satisfies ChartConfig;
 
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-];
+type ChartData = {
+  month: string;
+  product: number;
+  service: number;
+}[];
 
-function BarChartCom() {
+interface BarChartComProps {
+  chartData: ChartData;
+}
+function getRandomHexColor() {
+  // Generate a random number between 0 and 0xFFFFFF, convert it to a hex string, and pad with leading zeros
+  const randomColor = Math.floor(Math.random() * 0xffffff).toString(16);
+  // Return the hex color code formatted with a leading '#'
+  return `#${randomColor.padStart(6, "0")}`;
+}
+
+function BarChartCom({ chartData }: BarChartComProps) {
   return (
     <Card>
       <CardHeader>
@@ -62,8 +67,8 @@ function BarChartCom() {
             />
             <ChartTooltip content={<ChartTooltipContent />} />
             <ChartLegend content={<ChartLegendContent />} />
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-            <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
+            <Bar dataKey="product" fill={getRandomHexColor()} radius={4} />
+            <Bar dataKey="service" fill={getRandomHexColor()} radius={4} />
           </BarChart>
         </ChartContainer>
       </CardContent>
