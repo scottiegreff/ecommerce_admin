@@ -2,20 +2,20 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 
-export type OrderColumn = {
+export type ServiceOrderColumn = {
   id: string;
   phone: string;
   address: string;
   isPaid: boolean;
   totalPrice: string;
-  products: string;
+  services: string;
   createdAt: string;
 }
 
-export const columns: ColumnDef<OrderColumn>[] = [
+export const serviceColumns: ColumnDef<ServiceOrderColumn>[] = [
   {
-    accessorKey: "products",
-    header: "Products",
+    accessorKey: "services",
+    header: "Services",
   },
   {
     accessorKey: "phone",
