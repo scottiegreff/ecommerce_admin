@@ -4,6 +4,9 @@ import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import prismadb from "@/lib/prismadb";
 
+export async function OPTIONS( req: Request) {
+  return NextResponse.json({}, { headers: getCorsHeaders(req.headers.get("Origin"))});
+}
 // Define allowed origins
 const allowedOrigins = process.env.FRONTEND_STORE_URL;
 
@@ -30,7 +33,6 @@ export async function POST(
   req: Request,
   { params }: { params: { storeId: string } }
 ) {
-  console.log("FUCKING HERE");
   const { cartData } = await req.json();
   console.log("PRODUCT IDS", cartData);
   if (!cartData || cartData.length === 0) {
