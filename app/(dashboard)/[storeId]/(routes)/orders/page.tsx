@@ -7,6 +7,7 @@ import { ProductOrderColumn } from "./components/productColumns";
 import { ServiceOrderClient } from "./components/serviceClient";
 import { ProductOrderClient } from "./components/productClient";
 import { ServiceOrderColumn } from "./components/serviceColumns";
+import { Separator } from "@/components/ui/separator";
 
 
 const OrdersPage = async ({ params }: { params: { storeId: string } }) => {
@@ -81,7 +82,8 @@ const OrdersPage = async ({ params }: { params: { storeId: string } }) => {
           <ServiceOrderClient data={formattedServiceOrders} />
         </div>
       </div>
-      <div className="flex-col">
+      <Separator/>
+      <div className="flex-col mt-5">
         <div className="flex-1 space-y-4 p-8 pt-6">
           <ProductOrderClient data={formattedProductOrders} />
         </div>

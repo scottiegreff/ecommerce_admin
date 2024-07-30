@@ -5,6 +5,7 @@ import BarChartCom from "@/components/bar-chart";
 import { getProductsRevenueByStore } from "@/actions/get-products-revenue";
 import { getServicesRevenueByStore } from "@/actions/get-services-revenue";
 import { getMonthlyProductRevenue } from "@/actions/get-monthly-product-revenue";
+import { Separator } from "@/components/ui/separator";
 
 interface AnalyticsPageProps {
   params: {
@@ -189,13 +190,14 @@ const Analytics: React.FC<AnalyticsPageProps> = async ({ params }) => {
             </div>
           </div>
         </div>
-        <div className="md:mt-[3rem] font-thin text-5xl flex justify-around items-center">
+        <Separator/>
+        <div className="md:mt-[8rem] font-thin text-5xl flex justify-around items-center">
           <h2 className="">LONG TERM</h2>
         </div>
-        <div className="md:mt-[1rem] font-thin text-4xl flex justify-around items-center">
+        {/* <div className="md:mt-[1rem] font-thin text-4xl flex justify-around items-center">
           <h2>GOODS</h2>
           <h2>SERVICES</h2>
-        </div>
+        </div> */}
         <div className="mb-10">
           <AreaChartCom chartData={chartData} />
         </div>
