@@ -76,7 +76,7 @@ const MarkupCalculator: React.FC = () => {
         />
       </div>
       <div className="mb-4">
-        <Label className="block mb-2">Markup ( markup  = price - cost ) </Label>
+        <Label className="block mb-2">Percentage Markup ( (price - cost) / cost x 100 ) </Label>
         <Input
           type="number"
           placeholder="%"
