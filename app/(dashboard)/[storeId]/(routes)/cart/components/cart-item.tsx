@@ -4,10 +4,11 @@ import { X } from "lucide-react";
 import IconButton from "@/components/ui/icon-button";
 import Currency from "@/components/ui/currency";
 import useCart from "@/hooks/use-cart";
-import { Service } from "@/types";
+import { Service, Product } from "@/types";
+
 
 interface CartItemProps {
-  data: Service;
+  data: Service | Product;
 }
 
 const CartItem: React.FC<CartItemProps> = ({ data }) => {
