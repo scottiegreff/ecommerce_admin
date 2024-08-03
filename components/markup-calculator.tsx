@@ -60,10 +60,10 @@ const MarkupCalculator: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 shadow-lg rounded-lg border">
+    <div className="md:col-span-1 p-6 shadow-sm rounded-lg border mb-10 md:mb-0">
       <Heading
-        title="Enter markup information"
-        description="Enter two of the fields below to automatically calculate."
+        title="Markup Calculator"
+        description="Enter two of the fields below to automatically calculate markup."
       />
       <div className="my-4">
         <Label className="block mb-2">Cost ( bought wholesale price )</Label>
@@ -96,7 +96,7 @@ const MarkupCalculator: React.FC = () => {
         />
       </div>
       <div className="mb-4">
-        <Label className="block mb-2">Revenue ( retail price )</Label>
+        <Label className="block mb-2">Price ( revenue )</Label>
         <Input
           type="number"
           placeholder="$"
