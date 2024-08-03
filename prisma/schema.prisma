@@ -173,6 +173,11 @@ model Product {
   categoryId String
   name       String
   price      Decimal
+  quantity   Int?
+  cost       Decimal?
+  markup     Decimal?
+  margin     Decimal?
+  profit     Decimal?
   isFeatured Boolean     @default(false)
   isArchived Boolean     @default(false)
   sizeId     String

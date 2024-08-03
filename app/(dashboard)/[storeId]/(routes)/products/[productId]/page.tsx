@@ -33,7 +33,7 @@ const ProductPage = async ({
       storeId: params.storeId,
     },
   });
-  console.log("PRODUCT FROM [productId] Page: ", product)
+
   return ( 
     <div className="flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">

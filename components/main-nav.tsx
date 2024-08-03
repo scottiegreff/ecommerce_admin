@@ -93,8 +93,8 @@ export function MainNav({
     },
     {
       href: `/${params.storeId}/cart`,
-      label: "Payments",
-      active: pathname === `/${params.storeId}/`,
+      label: "Cart",
+      active: pathname === `/${params.storeId}/cart`,
     },
     {
       href: `/${params.storeId}/analytics`,

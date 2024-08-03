@@ -30,6 +30,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "prisma/seed.js"
-, "lib/emails/mailService.ts"  ],
+, "lib/emails/mailService.ts", "app/(dashboard)/[storeId]/(routes)/buyproducts"  ],
   "exclude": ["node_modules"]
 }

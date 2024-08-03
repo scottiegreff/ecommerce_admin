@@ -6,7 +6,7 @@ import { Product, Service } from "@/types"
 import { AlertTriangle } from 'lucide-react';
 
 interface CartStore {
-  items: Service[];
+  items: (Service | Product)[];
   addItem: (data: Service) => void;
   removeItem: (id: string) => void;
   removeAll: () => void;
@@ -15,7 +15,7 @@ interface CartStore {
 const useCart = create(
   persist<CartStore>((set, get) => ({
   items: [],
-  addItem: (data: Service) => {
+  addItem: (data: Service | Product) => {
     // const currentItems = get().items;
     // const existingItem = currentItems.find((item) => item.id === data.id);
     

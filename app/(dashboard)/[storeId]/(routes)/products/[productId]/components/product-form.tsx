@@ -27,11 +27,17 @@ import { AlertModal } from "@/components/modals/alert-modal"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import ImageUpload from "@/components/ui/image-upload"
 import { Checkbox } from "@/components/ui/checkbox"
+import MarkupCalculator from "@/components/markup-calculator"
 
 const formSchema = z.object({
   name: z.string().min(1),
   images: z.object({ url: z.string() }).array(),
-  price: z.coerce.number().min(1),
+  quantity: z.coerce.number().min(1).optional(),
+  price: z.coerce.number(),
+  cost: z.coerce.number().min(1).optional(),
+  markup: z.coerce.number().min(1).optional(),
+  margin: z.coerce.number().min(1).optional(),
+  profit: z.coerce.number().optional(),
   categoryId: z.string().min(1),
   colorId: z.string().min(1),
   sizeId: z.string().min(1),
@@ -70,11 +76,21 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 
   const defaultValues = initialData ? {
     ...initialData,
-    price: parseFloat(String(initialData?.price)),
+    price: parseFloat(String(initialData?.price)) || 0,
+    cost: parseFloat(String(initialData?.cost)) || 0,
+    margin: parseFloat(String(initialData?.margin)) || 0,
+    markup: parseFloat(String(initialData?.markup)) || 0,
+    profit: parseFloat(String(initialData?.profit)) || 0,
+
   } : {
     name: '',
     images: [],
+    quantity: 1,
     price: 0,
+    cost: 0,
+    margin: 0,
+    markup: 0,
+    profit: 0,
     categoryId: '',
     colorId: '',
     sizeId: '',
@@ -176,14 +192,79 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                 </FormItem>
               )}
             />
+                <FormField
+              control={form.control}
+              name="quantity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Quantity #</FormLabel>
+                  <FormControl>
+                    <Input type="number" min={1} max={100} disabled={loading} placeholder="1" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price</FormLabel>
+                  <FormLabel>Price $</FormLabel>
                   <FormControl>
-                    <Input type="number" min={0} max={100000} disabled={loading} placeholder="9.99" {...field} />
+                    <Input type="decimal" min={0} max={100000} disabled={loading} placeholder="9.99" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+               <FormField
+              control={form.control}
+              name="cost"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cost $</FormLabel>
+                  <FormControl>
+                    <Input type="decimal" min={0} max={100} disabled={loading} placeholder="$" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+               <FormField
+              control={form.control}
+              name="markup"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Markup %</FormLabel>
+                  <FormControl>
+                    <Input type="decimal" min={0} max={100} disabled={loading} placeholder="%" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+               <FormField
+              control={form.control}
+              name="margin"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Margin %</FormLabel>
+                  <FormControl>
+                    <Input type="decimal" min={0} max={100} disabled={loading} placeholder="0" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+               <FormField
+              control={form.control}
+              name="profit"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Profit $</FormLabel>
+                  <FormControl>
+                    <Input type="decimal" min={0} max={100000} disabled={loading} placeholder="$" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -307,6 +388,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           </Button>
         </form>
       </Form>
+      <MarkupCalculator/>
     </>
   );
 };

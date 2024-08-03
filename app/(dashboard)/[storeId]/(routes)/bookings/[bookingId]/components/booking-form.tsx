@@ -105,7 +105,7 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
           body: JSON.stringify(data),
         }
       );
-      const responseData = await response.json(); // Access the response data
+      const responseData = await response.json();
       router.refresh();
       toast.success(toastMessage);
     } catch (error: any) {

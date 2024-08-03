@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react";
+import { Copy, CreditCard, MoreHorizontal, Trash } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 import useCart from "@/hooks/use-cart";
@@ -33,7 +33,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [cartItem, setCartItem] = useState<Service>();
 
   const onConfirm = async () => {
-    console.log("data", data.bookingId);
     try {
       setLoading(true);
       await axios.delete(`/api/${params.storeId}/bookings/${data?.bookingId}`);
@@ -56,14 +55,11 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     const fetchBooking = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(
-          `/api/${params.storeId}/bookings/${id}`
-        );
+        const res = await axios.get(`/api/${params.storeId}/bookings/${id}`);
         const booking = res.data;
         booking.service.map((item: Service) => {
           cart.addItem(item);
-        }
-        );
+        });
         router.push(`/${params.storeId}/cart`);
         router.refresh();
       } catch (error) {
@@ -74,8 +70,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     };
     fetchBooking();
   };
-
-
 
   return (
     <>
@@ -96,7 +90,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => onPayNow(data?.bookingId)}>
-            <Edit className="mr-2 h-4 w-4" /> PAY NOW
+            <CreditCard className="mr-2 h-4 w-4" /> ADD TO CART
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => onCopy(data?.bookingId)}>
             <Copy className="mr-2 h-4 w-4" /> Copy Id

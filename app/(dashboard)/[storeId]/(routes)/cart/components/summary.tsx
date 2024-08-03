@@ -45,7 +45,7 @@ const Summary = () => {
   const cartData = Array.from(itemMap.values());
 
   const onCheckout = async () => {
-    const response = await axios.post(`/api/${storeId}/serviceCheckout`, {
+    const response = await axios.post(`/api/${storeId}/checkout`, {
       cartData: cartData,
     });
     window.location = response.data.url;
