@@ -57,16 +57,6 @@ export function MainNav({
       label: "|",
     },
     {
-      href: `/${params.storeId}/employees`,
-      label: "Employees",
-      active: pathname === `/${params.storeId}/employees`,
-    },
-    {
-      href: `/${params.storeId}/shifts`,
-      label: "Shifts",
-      active: pathname === `/${params.storeId}/shifts`,
-    },
-    {
       href: `/${params.storeId}/services`,
       label: "Services",
       active: pathname === `/${params.storeId}/service`,
@@ -80,6 +70,26 @@ export function MainNav({
       href: `/${params.storeId}/bookings`,
       label: "Bookings",
       active: pathname === `/${params.storeId}/bookings`,
+    },
+    {
+      href: `/${params.storeId}`,
+      label: "|",
+    },
+    {
+      href: `/${params.storeId}/positions`,
+      label: "Positions",
+      active: pathname === `/${params.storeId}/positions`,
+    },
+  
+    {
+      href: `/${params.storeId}/employees`,
+      label: "Employees",
+      active: pathname === `/${params.storeId}/employees`,
+    },
+    {
+      href: `/${params.storeId}/shifts`,
+      label: "Shifts",
+      active: pathname === `/${params.storeId}/shifts`,
     },
 
     {

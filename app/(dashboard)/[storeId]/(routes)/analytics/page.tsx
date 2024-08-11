@@ -13,7 +13,6 @@ interface AnalyticsPageProps {
   };
 }
 const Analytics: React.FC<AnalyticsPageProps> = async ({ params }) => {
-  
   const getStartOfToday = () => {
     const now = new Date();
     const startOfToday = new Date(
@@ -118,80 +117,79 @@ const Analytics: React.FC<AnalyticsPageProps> = async ({ params }) => {
 
   return (
     <>
-      <div className="md:w-[80vw] m-auto">
-        <div className="md:mt-[3rem] font-thin text-5xl flex justify-around items-center">
+      <div className="md:max-w-[80vw] m-auto">
+        <div className="mt-[3rem] font-thin text-5xl flex justify-around items-center">
           <h2 className="">SHORT TERM</h2>
         </div>
-        <div className="md:mt-[1rem] font-thin text-4xl flex justify-around items-center">
-          <h2>GOODS</h2>
-          <h2>SERVICES</h2>
-        </div>
-        <div className="p-10 grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="md:grid md:grid-cols-2 gap-4">
-            <div className="mb-5 flex flex-col items-center justify-center">
-              <h3 className="mb-2 font-semibold">TODAY</h3>
 
-              <PieChartCom
-                chartData={productsRevenuePastDay}
-                timePeriod={getStartOfToday()}
-              />
-            </div>
-            <div className="mb-5 flex flex-col items-center justify-center">
-              <h3 className="mb-2 font-semibold">1 WEEK</h3>
-              <PieChartCom
-                chartData={productsRevenuePastWeek}
-                timePeriod={getStartOfWeek()}
-              />
-            </div>
-            <div className="mb-5 flex flex-col items-center justify-center">
-              <h3 className="mb-2 font-semibold">1 MONTH</h3>
-              <PieChartCom
-                chartData={productsRevenuePastMonth}
-                timePeriod={getThirtyDaysAgo()}
-              />
-            </div>
-            <div className="mb-5 flex flex-col items-center justify-center">
-              <h3 className="mb-2 font-semibold">3 MONTHS</h3>
-              <PieChartCom
-                chartData={productsRevenuePastThreeMonths}
-                timePeriod={getStartOfThreeMonthsAgo()}
-              />
-            </div>
+        <h2 className="text-center text-4xl mt-5">GOODS</h2>
+
+        <div className="p-10 grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="mb-5 flex flex-col items-center justify-center">
+            <h3 className="mb-2 font-semibold">TODAY</h3>
+
+            <PieChartCom
+              chartData={productsRevenuePastDay}
+              timePeriod={getStartOfToday()}
+            />
           </div>
-          <div className="md:grid md:grid-cols-2 gap-4">
-            <div className="mb-5 flex flex-col items-center justify-center">
-              <h3 className="mb-2 font-semibold">TODAY</h3>
-              <PieChartCom
-                chartData={servicesRevenuePastDay}
-                timePeriod={getStartOfToday()}
-              />
-            </div>
-            <div className="mb-5 flex flex-col items-center justify-center">
-              <h3 className="mb-2 font-semibold">1 WEEK</h3>
-              <PieChartCom
-                chartData={servicesRevenuePastWeek}
-                timePeriod={getStartOfWeek()}
-              />
-            </div>
-            <div className="mb-5 flex flex-col items-center justify-center">
-              <h3 className="mb-2 font-semibold">1 MONTHS</h3>
-              <PieChartCom
-                chartData={servicesRevenuePastMonth}
-                timePeriod={getThirtyDaysAgo()}
-              />
-            </div>
-            <div className="mb-5 flex flex-col items-center justify-center">
-              <h3 className="mb-2 font-semibold">3 MONTH</h3>
-
-              <PieChartCom
-                chartData={servicesRevenueThreeMonth}
-                timePeriod={getStartOfThreeMonthsAgo()}
-              />
-            </div>
+          <div className="mb-5 flex flex-col items-center justify-center">
+            <h3 className="mb-2 font-semibold">1 WEEK</h3>
+            <PieChartCom
+              chartData={productsRevenuePastWeek}
+              timePeriod={getStartOfWeek()}
+            />
+          </div>
+          <div className="mb-5 flex flex-col items-center justify-center">
+            <h3 className="mb-2 font-semibold">1 MONTH</h3>
+            <PieChartCom
+              chartData={productsRevenuePastMonth}
+              timePeriod={getThirtyDaysAgo()}
+            />
+          </div>
+          <div className="mb-5 flex flex-col items-center justify-center">
+            <h3 className="mb-2 font-semibold">3 MONTHS</h3>
+            <PieChartCom
+              chartData={productsRevenuePastThreeMonths}
+              timePeriod={getStartOfThreeMonthsAgo()}
+            />
           </div>
         </div>
-        <Separator/>
-        <div className="md:mt-[8rem] font-thin text-5xl flex justify-around items-center">
+        <h2 className="text-center text-4xl mt-5">SERVICES</h2>
+
+        <div className="p-10 grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="mb-5 flex flex-col items-center justify-center">
+            <h3 className="mb-2 font-semibold">TODAY</h3>
+            <PieChartCom
+              chartData={servicesRevenuePastDay}
+              timePeriod={getStartOfToday()}
+            />
+          </div>
+          <div className="mb-5 flex flex-col items-center justify-center">
+            <h3 className="mb-2 font-semibold">1 WEEK</h3>
+            <PieChartCom
+              chartData={servicesRevenuePastWeek}
+              timePeriod={getStartOfWeek()}
+            />
+          </div>
+          <div className="mb-5 flex flex-col items-center justify-center">
+            <h3 className="mb-2 font-semibold">1 MONTHS</h3>
+            <PieChartCom
+              chartData={servicesRevenuePastMonth}
+              timePeriod={getThirtyDaysAgo()}
+            />
+          </div>
+          <div className="mb-5 flex flex-col items-center justify-center">
+            <h3 className="mb-2 font-semibold">3 MONTH</h3>
+
+            <PieChartCom
+              chartData={servicesRevenueThreeMonth}
+              timePeriod={getStartOfThreeMonthsAgo()}
+            />
+          </div>
+        </div>
+        <Separator />
+        <div className="mt-[3rem] font-thin text-5xl flex justify-around items-center">
           <h2 className="">LONG TERM</h2>
         </div>
         {/* <div className="md:mt-[1rem] font-thin text-4xl flex justify-around items-center">

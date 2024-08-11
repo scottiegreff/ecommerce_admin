@@ -4,6 +4,7 @@ import { useState, useEffect, use } from "react";
 import { toast } from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+// import { sendEmail } from "@/lib/emails/sendGrid";
 
 import { CalendarIcon } from "lucide-react";
 import { SearchIcon } from "lucide-react";
@@ -35,7 +36,14 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
-import { Booking, Employee, Service, Shift, Customer, BookingStartAndEnd } from "@/types";
+import {
+  Booking,
+  Employee,
+  Service,
+  Shift,
+  Customer,
+  BookingStartAndEnd,
+} from "@/types";
 import React from "react";
 import { it } from "node:test";
 
@@ -45,15 +53,21 @@ interface BookingFormProps {
   employees: Employee[];
 }
 
-const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employees }, ) => {
+const BookingForm: React.FC<BookingFormProps> = ({
+  services,
+  customers,
+  employees,
+}) => {
   const params = useParams();
   const router = useRouter();
   const [service, setService] = useState<Service[]>();
+  const [serviceName, setServiceName] = useState("");
   const [serviceId, setServiceId] = useState("");
   const [customerId, setCustomerId] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [serviceDuration, setServiceDuration] = useState<number>();
   const [employeeId, setEmployeeId] = useState("");
+  const [employeeName, setEmployeeName] = useState("Ziggy Ernst");
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [shift, setShift] = useState<Shift>();
   const [date, setDate] = useState<Date>();
@@ -61,12 +75,33 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
   const [bookingStartDateAndTime, setBookingStartDateAndTime] =
-  useState<String>();
-  
+    useState<String>();
+
   const [loading, setLoading] = useState(false);
 
   const toastMessage = "Booking created.";
   const action = "Book Appointment";
+
+  type EmailData = {
+    customerEmail: string;
+    employeeName: string;
+    serviceName: string;
+    date: Date;
+  };
+  const sendEmail = async (emailData: EmailData) => {
+    console.log("SEND EMAIL CLIENT : ", customerEmail, employeeName, serviceName, date)
+    try {
+      const response = await fetch(`/api/${params.storeId}/sendEmail`, {
+        method: "POST",
+        body: JSON.stringify(emailData),
+      }
+    );
+      const responseData = await response.json();
+      console.log("BOOKING :", responseData);
+    } catch (error: any) {
+      console.log("Email NOT Sent", error);
+    }
+  };
 
   const onSubmit = async () => {
     if (!employeeId) {
@@ -98,14 +133,17 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
 
     try {
       setLoading(true);
-      const response = await fetch(
-        `/api/${params.storeId}/bookings`,
-        {
-          method: "POST",
-          body: JSON.stringify(data),
-        }
-      );
-      const responseData = await response.json();
+
+      // Fetch the API
+      const response = await fetch(`/api/${params.storeId}/bookings`, {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+
+      // Send email after successfully fetching
+      await sendEmail({ customerEmail, employeeName, serviceName, date });
+
+      // Refresh the router and display success message
       router.refresh();
       toast.success(toastMessage);
     } catch (error: any) {
@@ -122,7 +160,7 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
     );
   }
 
-   // Function called from the date disabled attribute to check if the date is the same as the employeeId.
+  // Function called from the date disabled attribute to check if the date is the same as the employeeId.
   // If the date is the same as the employeeId then the date is NOT disabled.
   function isDateSameAsEmployeeId(date: Date, shifts: Shift[]) {
     // console.log("SHIFT.START SHIFT: ", shifts[0].startShift, "- DATE: ", date);
@@ -137,13 +175,10 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
     if (service && employeeId) {
       const shifts = async () => {
         try {
-          const response = await fetch(
-            `/api/${params.storeId}/shiftsStore`,
-            {
-              method: "POST",
-              body: JSON.stringify({ employeeId: employeeId }),
-            }
-          );
+          const response = await fetch(`/api/${params.storeId}/shiftsStore`, {
+            method: "POST",
+            body: JSON.stringify({ employeeId: employeeId }),
+          });
           const data: Shift[] = await response.json();
 
           data.forEach((item: Shift) => {
@@ -157,7 +192,7 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
       };
       shifts();
     }
-  }, [service,customerId, employeeId]);
+  }, [service, customerId, employeeId]);
 
   useEffect(() => {
     // this useEffect is used to gather data needed for the availableSlots function,
@@ -298,6 +333,7 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
                   (service) => service.id === value
                 );
                 setServiceId(value);
+                setServiceName(selectedService.name);
                 const serviceArr = selectedService ? [selectedService] : [];
                 setService(serviceArr);
               }}
@@ -388,6 +424,7 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
                     onSelect={() => {
                       if (item.id) {
                         setEmployeeId(item.id);
+                        setEmployeeName("${item.fName} ${item.lName}");
                       }
                     }}
                   >
@@ -413,10 +450,7 @@ const BookingForm: React.FC<BookingFormProps> = ( { services, customers, employe
                   {date ? format(date, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent
-                className="w-auto p-0 h-[325px]"
-                align="start"
-              >
+              <PopoverContent className="w-auto p-0 h-[325px]" align="start">
                 <Calendar
                   className="overflow-hidden font-bold"
                   mode="single"

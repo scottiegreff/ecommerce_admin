@@ -91,19 +91,21 @@ model Customer {
 }
 
 model Employee {
-  id        String    @id @default(uuid())
-  storeId   String
-  fName     String
-  lName     String
-  email     String    @unique
-  phone     String
-  color     String
-  createdAt DateTime  @default(now())
-  isActive  Boolean   @default(true)
-  shifts    Shift[]   @relation("EmployeeToShift")
-  services  Service[]
-  bookings  Booking[]
-  store     Store     @relation("StoreToEmployee", fields: [storeId], references: [id])
+  id         String    @id @default(uuid())
+  storeId    String
+  fName      String
+  lName      String
+  email      String    @unique
+  phone      String
+  color      String
+  createdAt  DateTime  @default(now())
+  isActive   Boolean   @default(true)
+  positionId String?
+  shifts     Shift[]   @relation("EmployeeToShift")
+  services   Service[]
+  bookings   Booking[]
+  store      Store     @relation("StoreToEmployee", fields: [storeId], references: [id])
+  position   Position? @relation(fields: [positionId], references: [id])
 
   @@index([storeId])
 }
@@ -165,6 +167,19 @@ model OrderItem {
   @@index([orderId])
   @@index([productId])
   @@index([serviceId])
+}
+
+model Position {
+  id         String     @id @default(uuid())
+  storeId    String
+  title      String
+  wage       Decimal
+  commission Decimal
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  employee   Employee[]
+
+  @@index([storeId])
 }
 
 model Product {

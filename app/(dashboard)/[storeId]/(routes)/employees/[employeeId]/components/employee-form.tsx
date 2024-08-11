@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { Trash } from "lucide-react";
-import { Employee, Shift } from "@prisma/client";
+import { Employee, Position, Shift } from "@prisma/client";
 import { useParams, useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 
@@ -38,6 +38,7 @@ const formSchema = z.object({
   lName: z.string().min(1),
   email: z.string().email(),
   phone: z.string().min(1),
+  position: z.string().min(1),
   color: z
     .string({
       required_error: "Please select an email to display.",
@@ -50,7 +51,7 @@ const formSchema = z.object({
 type EmployeeFormValues = z.infer<typeof formSchema>;
 
 interface EmployeeFormProps {
-  initialData: (Employee & { shifts: Shift[] }) | null;
+  initialData: (Employee & { position: Position[] }) | null;
 }
 
 export const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialData }) => {
@@ -94,13 +95,13 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialData }) => {
       lName: "",
       phone: "",
       email: "",
+      position: "",
       color: "#D2A0A0",
       isActive: true,
     },
   });
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log("DATA FROM ON SUBMIT FORM", data);
     try {
       setLoading(true);
       if (initialData) {
@@ -242,6 +243,24 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialData }) => {
                 </FormItem>
               )}
             />
+             {/* POSITION */}
+             <FormField
+              control={form.control}
+              name="position"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Position Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      placeholder="Title"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             {/* COLOR */}
             <FormField
               control={form.control}
@@ -252,7 +271,6 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialData }) => {
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
-                   
                   >
                     <FormControl>
                       <SelectTrigger>

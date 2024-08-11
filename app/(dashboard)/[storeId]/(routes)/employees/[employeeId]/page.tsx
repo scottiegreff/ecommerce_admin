@@ -12,14 +12,10 @@ const EmployeePage = async ({
       id: params.employeeId,
     },
     include: {
-      shifts: true,
+      position: true
     },
   });
-  const shifts = await prismadb.shift.findUnique({
-    where: {
-      id: params.employeeId,
-    },
-  });
+
 
   return (
     <div className="flex-col">
