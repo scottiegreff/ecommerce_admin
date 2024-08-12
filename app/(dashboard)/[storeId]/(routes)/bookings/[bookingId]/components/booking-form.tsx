@@ -67,15 +67,14 @@ const BookingForm: React.FC<BookingFormProps> = ({
   const [customerEmail, setCustomerEmail] = useState("");
   const [serviceDuration, setServiceDuration] = useState<number>();
   const [employeeId, setEmployeeId] = useState("");
-  const [employeeName, setEmployeeName] = useState("Ziggy Ernst");
+  const [employeeName, setEmployeeName] = useState("");
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [shift, setShift] = useState<Shift>();
   const [date, setDate] = useState<Date>();
   let [bookingHours, setBookingHours] = useState<Date[] | undefined>([]);
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
-  const [bookingStartDateAndTime, setBookingStartDateAndTime] =
-    useState<String>();
+  const [bookingStartDateAndTime, setBookingStartDateAndTime] = useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -86,22 +85,21 @@ const BookingForm: React.FC<BookingFormProps> = ({
     customerEmail: string;
     employeeName: string;
     serviceName: string;
-    date: Date;
+    bookingStartDateAndTime: string;
   };
-  const sendEmail = async (emailData: EmailData) => {
-    console.log("SEND EMAIL CLIENT : ", customerEmail, employeeName, serviceName, date)
+  async function sendEmail(emailData: EmailData) {
+
     try {
       const response = await fetch(`/api/${params.storeId}/sendEmail`, {
         method: "POST",
         body: JSON.stringify(emailData),
-      }
-    );
+      });
       const responseData = await response.json();
       console.log("BOOKING :", responseData);
     } catch (error: any) {
       console.log("Email NOT Sent", error);
     }
-  };
+  }
 
   const onSubmit = async () => {
     if (!employeeId) {
@@ -120,6 +118,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
     const endOfBooking = new Date(
       startOfBooking.getTime() + (serviceDuration ?? 0) * 60000
     );
+
     const data = {
       serviceId: serviceId,
       service: service,
@@ -141,7 +140,13 @@ const BookingForm: React.FC<BookingFormProps> = ({
       });
 
       // Send email after successfully fetching
-      await sendEmail({ customerEmail, employeeName, serviceName, date });
+      const emailData = {
+        customerEmail,
+        employeeName,
+        serviceName,
+        bookingStartDateAndTime,
+      };
+      await sendEmail(emailData);
 
       // Refresh the router and display success message
       router.refresh();
@@ -410,7 +415,19 @@ const BookingForm: React.FC<BookingFormProps> = ({
           {/* EMPLOYEE ID */}
           <div className="flex flex-col gap-2 my-3 md:my-0">
             <label className="text-md font-light">Book Staff</label>
-            <Select onValueChange={(value) => setEmployeeId(value)}>
+            <Select
+              onValueChange={(value) => {
+                const selectedEmployee = employees.find(
+                  (item) => item.id === value
+                );
+                if (selectedEmployee) {
+                  setEmployeeName(
+                    `${selectedEmployee.fName} ${selectedEmployee.lName}`
+                  );
+                  setEmployeeId(value);
+                }
+              }}
+            >
               <SelectTrigger className="text-muted-foreground font-normal">
                 <SelectValue placeholder="Select a staff" />
               </SelectTrigger>
@@ -421,12 +438,6 @@ const BookingForm: React.FC<BookingFormProps> = ({
                     key={item.id}
                     value={item.id}
                     disabled={loading || !serviceId || !customerId}
-                    onSelect={() => {
-                      if (item.id) {
-                        setEmployeeId(item.id);
-                        setEmployeeName("${item.fName} ${item.lName}");
-                      }
-                    }}
                   >
                     {item.fName} {item.lName}
                   </SelectItem>
@@ -434,6 +445,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
               </SelectContent>
             </Select>
           </div>
+
           {/* DATE PICKER */}
           <div className="flex flex-col gap-2 my-3 md:my-0">
             <label className="text-md font-light">Booking Date</label>
