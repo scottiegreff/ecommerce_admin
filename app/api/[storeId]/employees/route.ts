@@ -12,7 +12,7 @@ export async function POST(
 
     const body = await req.json();
 
-    const { fName, lName, email, phone, color, isActive } = body;
+    const { fName, lName, positionId, email, phone, color, isActive } = body;
 
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 403 });
@@ -24,6 +24,10 @@ export async function POST(
 
     if (!lName) {
       return new NextResponse("Name is required", { status: 400 });
+    }
+
+    if (!positionId) {
+      return new NextResponse("Position Id is required", { status: 400 });
     }
 
     if (!email) {
@@ -61,6 +65,7 @@ export async function POST(
       data: {
         fName,
         lName,
+        positionId,
         email,
         phone,
         color,

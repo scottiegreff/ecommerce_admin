@@ -19,6 +19,7 @@ const EmployeePage = async ({ params }: { params: { storeId: string } }) => {
     id: item.id,
     fName: item.fName,
     lName: item.lName,
+    title: item.positionId,
     email: item.email,
     phone: item.phone,
     employeeId: item.id,

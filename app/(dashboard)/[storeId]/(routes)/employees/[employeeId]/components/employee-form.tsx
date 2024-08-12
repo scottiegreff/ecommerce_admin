@@ -38,7 +38,7 @@ const formSchema = z.object({
   lName: z.string().min(1),
   email: z.string().email(),
   phone: z.string().min(1),
-  position: z.string().min(1),
+  positionId: z.string().min(1),
   color: z
     .string({
       required_error: "Please select an email to display.",
@@ -51,10 +51,14 @@ const formSchema = z.object({
 type EmployeeFormValues = z.infer<typeof formSchema>;
 
 interface EmployeeFormProps {
-  initialData: (Employee & { position: Position[] }) | null;
+  initialData: Employee | null;
+  positions: Position[];
 }
 
-export const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialData }) => {
+export const EmployeeForm: React.FC<EmployeeFormProps> = ({
+  initialData,
+  positions,
+}) => {
   const params = useParams();
   const router = useRouter();
 
@@ -95,7 +99,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialData }) => {
       lName: "",
       phone: "",
       email: "",
-      position: "",
+      positionId: "",
       color: "#D2A0A0",
       isActive: true,
     },
@@ -105,13 +109,11 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialData }) => {
     try {
       setLoading(true);
       if (initialData) {
-        console.log("PATCHING");
         await axios.patch(
           `/api/${params.storeId}/employees/${params.employeeId}`,
           data
         );
       } else {
-        console.log("POSTING");
         await axios.post(`/api/${params.storeId}/employees`, data);
       }
       router.refresh();
@@ -243,20 +245,44 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({ initialData }) => {
                 </FormItem>
               )}
             />
-             {/* POSITION */}
-             <FormField
+            {/* POSITION */}
+            <FormField
               control={form.control}
-              name="position"
+              name="positionId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Position Title</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={loading}
-                      placeholder="Title"
-                      {...field}
-                    />
-                  </FormControl>
+                  <FormLabel>Employee Title</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a Title" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent
+                      style={{ maxHeight: "400px", overflowY: "auto" }}
+                    >
+                      {positions.map((position) => (
+                        <SelectItem
+                          className="w-full"
+                          key={position.id}
+                          value={position.id}
+                          disabled={loading}
+                          placeholder="Title"
+                        >
+                          <div className="flex gap-3 items-center">
+                            <p>{position.title}</p>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Pick a color for employee to display on the schedule
+                    calendar.{" "}
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

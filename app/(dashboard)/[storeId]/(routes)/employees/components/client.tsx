@@ -11,10 +11,12 @@ import { Separator } from "@/components/ui/separator";
 import { ApiList } from "@/components/ui/api-list";
 
 import { EmployeeColumn, columns } from "./columns";
+import { Position } from "@prisma/client";
 
 
 interface EmployeesClientProps {
   data: EmployeeColumn[];
+
 }
 
 export const EmployeesClient: React.FC<EmployeesClientProps> = ({

@@ -11,6 +11,7 @@ import { effect } from "zod";
 
 export type EmployeeColumn = { 
   id: string;
+  title: string,
   fName: string;
   lName: string;
   email: string;
@@ -40,6 +41,10 @@ export const columns: ColumnDef<EmployeeColumn>[] = [
   {
     accessorKey: "lName",
     header: "Last Name",
+  },
+  {
+    accessorKey: "title",
+    header: "Title",
   },
   {
     accessorKey: "email",
