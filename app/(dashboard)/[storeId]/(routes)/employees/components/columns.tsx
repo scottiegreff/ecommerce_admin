@@ -44,7 +44,7 @@ export const columns: ColumnDef<EmployeeColumn>[] = [
   },
   {
     accessorKey: "title",
-    header: "Title",
+    header: "Title ID",
   },
   {
     accessorKey: "email",

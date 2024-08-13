@@ -56,68 +56,70 @@ export async function POST(
     }
 
     const date = new Date(bookingStartDateAndTime);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
     const formattedDate = date.toDateString();
-    const message = `You have a ${serviceName} appointment with ${employeeName} at ${formattedDate}... SEE YOU THEN!`;
+    const message = `You have a ${serviceName} appointment with ${employeeName} on ${formattedDate} at ${hours}:${minutes}.`;
     const msg = {
       to: `${customerEmail}`, // Change to your recipient
-      from: "ziggy-prisoner-of-love-studio@sgreff.com", // Change to your verified sender
+      from: "prisoneroflovestudio@sgreff.com", // Change to your verified sender
       subject: "Confirmation Email",
       text: message,
       html: `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Appointment Confirmation</title>
-    <style>
-        body {
-            background-color: #1c1c1c;
-            color: #1c1c1c;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 100vw;
-            margin: 0 auto;
-            background-color: #1c1c1c;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-            text-align: center;
-        }
-        .header img {
-            max-width: 50vw;
-            height: auto;
-        }
-        .content p {
-            margin: 20px 0;
-            font-size: 18px;
-            color: #fff;
-        }
-        .content strong {
-            margin: 20px 0;
-            font-size: 18px;
-            color: #fff;
-        }
-  
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <img src=${pol} alt="Prisoner of Love Studio Logo"/>
-        </div>
-        <div class="content">
-            <p>You have a ${serviceName} appointment,</p>
-            <p> with ${employeeName} at ${formattedDate}.<p/>
-            <strong>Prisoner of Love Studio</strong>
-        </div>
-    </div>
-</body>
-</html>`,
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Appointment Confirmation</title>
+                    <style>
+                        body {
+                            background-color: #1c1c1c;
+                            color: #1c1c1c;
+                            font-family: Arial, sans-serif;
+                            margin: 0;
+                            padding: 20px;
+                        }
+                        .container {
+                            max-width: 100vw;
+                            margin: 0 auto;
+                            background-color: #1c1c1c;
+                            padding: 30px;
+                            border-radius: 10px;
+                            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+                            text-align: center;
+                        }
+                        .header img {
+                            max-width: 50vw;
+                            height: auto;
+                        }
+                        .content p {
+                            margin: 20px 0;
+                            font-size: 18px;
+                            color: #fff;
+                        }
+                        .content strong {
+                            margin: 20px 0;
+                            font-size: 18px;
+                            color: #fff;
+                        }
+                  
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <img src=${pol} alt="Prisoner of Love Studio Logo"/>
+                        </div>
+                        <div class="content">
+                            <p>You have a ${serviceName} appointment,</p>
+                             <p> with ${employeeName} on ${formattedDate} at ${hours}:${minutes}.<p/>
+                            <strong>Prisoner of Love Studio</strong>
+                        </div>
+                    </div>
+                </body>
+                </html>`,
     };
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
     const email = sgMail
       .send(msg)
       .then(() => {
