@@ -122,39 +122,6 @@ const Analytics: React.FC<AnalyticsPageProps> = async ({ params }) => {
           <h2 className="">SHORT TERM</h2>
         </div>
 
-        <h2 className="text-center text-4xl mt-5">GOODS</h2>
-
-        <div className="p-10 grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="mb-5 flex flex-col items-center justify-center">
-            <h3 className="mb-2 font-semibold">TODAY</h3>
-
-            <PieChartCom
-              chartData={productsRevenuePastDay}
-              timePeriod={getStartOfToday()}
-            />
-          </div>
-          <div className="mb-5 flex flex-col items-center justify-center">
-            <h3 className="mb-2 font-semibold">1 WEEK</h3>
-            <PieChartCom
-              chartData={productsRevenuePastWeek}
-              timePeriod={getStartOfWeek()}
-            />
-          </div>
-          <div className="mb-5 flex flex-col items-center justify-center">
-            <h3 className="mb-2 font-semibold">1 MONTH</h3>
-            <PieChartCom
-              chartData={productsRevenuePastMonth}
-              timePeriod={getThirtyDaysAgo()}
-            />
-          </div>
-          <div className="mb-5 flex flex-col items-center justify-center">
-            <h3 className="mb-2 font-semibold">3 MONTHS</h3>
-            <PieChartCom
-              chartData={productsRevenuePastThreeMonths}
-              timePeriod={getStartOfThreeMonthsAgo()}
-            />
-          </div>
-        </div>
         <h2 className="text-center text-4xl mt-5">SERVICES</h2>
 
         <div className="p-10 grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -184,6 +151,39 @@ const Analytics: React.FC<AnalyticsPageProps> = async ({ params }) => {
 
             <PieChartCom
               chartData={servicesRevenueThreeMonth}
+              timePeriod={getStartOfThreeMonthsAgo()}
+            />
+          </div>
+        </div>
+        <h2 className="text-center text-4xl mt-5">GOODS</h2>
+
+        <div className="p-10 grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="mb-5 flex flex-col items-center justify-center">
+            <h3 className="mb-2 font-semibold">TODAY</h3>
+
+            <PieChartCom
+              chartData={productsRevenuePastDay}
+              timePeriod={getStartOfToday()}
+            />
+          </div>
+          <div className="mb-5 flex flex-col items-center justify-center">
+            <h3 className="mb-2 font-semibold">1 WEEK</h3>
+            <PieChartCom
+              chartData={productsRevenuePastWeek}
+              timePeriod={getStartOfWeek()}
+            />
+          </div>
+          <div className="mb-5 flex flex-col items-center justify-center">
+            <h3 className="mb-2 font-semibold">1 MONTH</h3>
+            <PieChartCom
+              chartData={productsRevenuePastMonth}
+              timePeriod={getThirtyDaysAgo()}
+            />
+          </div>
+          <div className="mb-5 flex flex-col items-center justify-center">
+            <h3 className="mb-2 font-semibold">3 MONTHS</h3>
+            <PieChartCom
+              chartData={productsRevenuePastThreeMonths}
               timePeriod={getStartOfThreeMonthsAgo()}
             />
           </div>

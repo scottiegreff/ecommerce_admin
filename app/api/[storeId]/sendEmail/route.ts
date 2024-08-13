@@ -117,7 +117,6 @@ export async function POST(
 </body>
 </html>`,
     };
-    console.log(msg);
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     const email = sgMail
       .send(msg)
