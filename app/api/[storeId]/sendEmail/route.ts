@@ -108,7 +108,7 @@ export async function POST(
                 <body>
                     <div class="container">
                         <div class="header">
-                            <img src=${pol} alt="Prisoner of Love Studio Logo"/>
+                          <img src="cid:${pol}" width="400" alt="Prisoner Of Life Logo" style="border: none; border-radius: 20px;"/>
                         </div>
                         <div class="content">
                             <p>You have a ${serviceName} appointment,</p>

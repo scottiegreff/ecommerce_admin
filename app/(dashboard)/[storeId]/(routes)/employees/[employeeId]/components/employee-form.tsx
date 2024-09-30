@@ -32,6 +32,7 @@ import {
 import { Heading } from "@/components/ui/heading";
 import { AlertModal } from "@/components/modals/alert-modal";
 import { Checkbox } from "@/components/ui/checkbox";
+import React from "react";
 
 const formSchema = z.object({
   fName: z.string().min(1),
@@ -357,7 +358,6 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
               )}
             />
           </div>
-          <Separator />
           <div className="flex justify-end">
             <Button type="submit" disabled={loading}>
               {action}
